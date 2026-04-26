@@ -15,6 +15,23 @@ MESSAGE_PATTERN = re.compile(
     r'^(\d{4}/\d{2}/\d{2}\([月火水木金土日]\) \d{2}:\d{2})\t(.+?)\t(.+)$'
 )
 
+SYSTEM_PROMPT = """あなたはLINEのグループチャットを分析してタスクを抽出するアシスタントです。
+会話の中からタスク・依頼・指示を抽出し、必ず以下のJSON形式のみを返してください。
+余分な説明やmarkdownコードブロックは不要です。
+
+{
+  "tasks": [
+    {
+      "content": "タスクの内容（動詞で終わる形で）",
+      "assignee": "担当者名（不明な場合は「未定」）",
+      "deadline": "期限（不明な場合は「未定」）",
+      "priority": "高・中・低のいずれか",
+      "speaker": "指示した人の名前",
+      "datetime": "発言の日時"
+    }
+  ]
+}"""
+
 
 def parse_line_log(text: str) -> dict:
     messages = []
@@ -58,8 +75,34 @@ def split_into_chunks(messages: list, max_chars: int = 80000) -> list:
     return chunks
 
 
-def extract_tasks_via_api(chunk_text: str, client) -> list:
-    pass
+def _messages_to_text(messages: list) -> str:
+    lines = []
+    for m in messages:
+        lines.append(f"{m['datetime']}\t{m['sender']}\t{m['text']}")
+    return "\n".join(lines)
+
+
+def extract_tasks_via_api(messages: list, client) -> list:
+    if not messages:
+        return []
+
+    chunk_text = _messages_to_text(messages)
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        system=SYSTEM_PROMPT,
+        messages=[{"role": "user", "content": f"--- 会話ログ ---\n{chunk_text}"}],
+    )
+
+    raw = response.content[0].text.strip()
+    raw = re.sub(r'^```(?:json)?\s*', '', raw)
+    raw = re.sub(r'\s*```$', '', raw)
+
+    try:
+        data = json.loads(raw)
+        return data.get("tasks", [])
+    except json.JSONDecodeError:
+        return []
 
 
 def deduplicate_tasks(tasks: list) -> list:
