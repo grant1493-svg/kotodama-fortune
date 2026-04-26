@@ -45,3 +45,28 @@ class TestParseLineLog(unittest.TestCase):
     def test_message_count(self):
         result = line_tasks.parse_line_log(self.SAMPLE_LOG)
         self.assertEqual(len(result["messages"]), 4)  # スタンプ除外後
+
+
+class TestSplitIntoChunks(unittest.TestCase):
+
+    def _make_messages(self, n, text_len=100):
+        return [
+            {"datetime": "2026/04/20(月) 10:00", "sender": "田中", "text": "あ" * text_len}
+            for _ in range(n)
+        ]
+
+    def test_short_log_returns_one_chunk(self):
+        messages = self._make_messages(5, text_len=10)
+        chunks = line_tasks.split_into_chunks(messages, max_chars=10000)
+        self.assertEqual(len(chunks), 1)
+
+    def test_long_log_splits_into_multiple_chunks(self):
+        messages = self._make_messages(100, text_len=900)
+        chunks = line_tasks.split_into_chunks(messages, max_chars=10000)
+        self.assertGreater(len(chunks), 1)
+
+    def test_no_messages_lost(self):
+        messages = self._make_messages(50, text_len=200)
+        chunks = line_tasks.split_into_chunks(messages, max_chars=5000)
+        total = sum(len(c) for c in chunks)
+        self.assertEqual(total, 50)

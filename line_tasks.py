@@ -39,7 +39,23 @@ def parse_line_log(text: str) -> dict:
 
 
 def split_into_chunks(messages: list, max_chars: int = 80000) -> list:
-    pass
+    chunks = []
+    current = []
+    current_len = 0
+
+    for msg in messages:
+        line = f"{msg['datetime']}\t{msg['sender']}\t{msg['text']}\n"
+        if current and current_len + len(line) > max_chars:
+            chunks.append(current)
+            current = []
+            current_len = 0
+        current.append(msg)
+        current_len += len(line)
+
+    if current:
+        chunks.append(current)
+
+    return chunks
 
 
 def extract_tasks_via_api(chunk_text: str, client) -> list:
