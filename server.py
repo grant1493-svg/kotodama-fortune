@@ -6,7 +6,16 @@ from datetime import date
 from flask import Flask, request, render_template, jsonify
 from dotenv import load_dotenv
 
-load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
+_env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+load_dotenv(_env_path)
+# python-dotenv のフォールバック: 手動で .env を読み込む
+if os.path.exists(_env_path):
+    with open(_env_path, encoding="utf-8-sig") as _f:
+        for _line in _f:
+            _line = _line.strip()
+            if _line and "=" in _line and not _line.startswith("#"):
+                _k, _, _v = _line.partition("=")
+                os.environ.setdefault(_k.strip(), _v.strip())
 
 sys.path.insert(0, os.path.dirname(__file__))
 import line_tasks
