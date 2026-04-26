@@ -106,7 +106,14 @@ def extract_tasks_via_api(messages: list, client) -> list:
 
 
 def deduplicate_tasks(tasks: list) -> list:
-    pass
+    seen = set()
+    result = []
+    for task in tasks:
+        key = task.get("content", "").strip()
+        if key not in seen:
+            seen.add(key)
+            result.append(task)
+    return result
 
 
 def generate_html(tasks: list, meta: dict) -> str:
