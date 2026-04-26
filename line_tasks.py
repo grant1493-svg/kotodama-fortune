@@ -343,7 +343,61 @@ def generate_html(tasks: list, meta: dict) -> str:
 
 
 def main():
-    pass
+    parser = argparse.ArgumentParser(
+        description="LINEのトーク履歴からタスクを抽出してHTMLを生成します"
+    )
+    parser.add_argument("logfile", help="LINEエクスポートの .txt ファイルパス")
+    parser.add_argument(
+        "--output", "-o",
+        default=None,
+        help="出力HTMLファイル名（省略時: tasks_YYYYMMDD.html）"
+    )
+    args = parser.parse_args()
+
+    if not os.path.exists(args.logfile):
+        print(f"エラー: ファイルが見つかりません: {args.logfile}", file=sys.stderr)
+        sys.exit(1)
+
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        print("エラー: 環境変数 ANTHROPIC_API_KEY が設定されていません", file=sys.stderr)
+        sys.exit(1)
+
+    print(f"読み込み中: {args.logfile}")
+    with open(args.logfile, encoding="utf-8") as f:
+        raw_text = f.read()
+
+    parsed = parse_line_log(raw_text)
+    messages = parsed["messages"]
+    print(f"{len(messages)} 件のメッセージを解析しました")
+
+    import anthropic
+    client = anthropic.Anthropic(api_key=api_key)
+
+    chunks = split_into_chunks(messages)
+    print(f"{len(chunks)} チャンクに分割してAPIに送ります")
+
+    all_tasks = []
+    for i, chunk in enumerate(chunks, 1):
+        print(f"  チャンク {i}/{len(chunks)} を処理中...")
+        tasks = extract_tasks_via_api(chunk, client)
+        all_tasks.extend(tasks)
+
+    all_tasks = deduplicate_tasks(all_tasks)
+    print(f"{len(all_tasks)} 件のタスクを抽出しました")
+
+    meta = {
+        "start_date": parsed["start_date"],
+        "end_date": parsed["end_date"],
+        "generated_at": date.today().isoformat(),
+    }
+    html = generate_html(all_tasks, meta)
+
+    output_path = args.output or f"tasks_{date.today().strftime('%Y%m%d')}.html"
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(html)
+
+    print(f"完了! → {output_path}")
 
 
 if __name__ == "__main__":
