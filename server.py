@@ -6,7 +6,7 @@ from datetime import date
 from flask import Flask, request, render_template, jsonify
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
 
 sys.path.insert(0, os.path.dirname(__file__))
 import line_tasks
