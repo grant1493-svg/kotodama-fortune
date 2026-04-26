@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import argparse
+import html as html_module
 import json
 import os
 import re
@@ -87,12 +88,16 @@ def extract_tasks_via_api(messages: list, client) -> list:
         return []
 
     chunk_text = _messages_to_text(messages)
-    response = client.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=4096,
-        system=SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": f"--- 会話ログ ---\n{chunk_text}"}],
-    )
+    try:
+        response = client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=4096,
+            system=SYSTEM_PROMPT,
+            messages=[{"role": "user", "content": f"--- 会話ログ ---\n{chunk_text}"}],
+        )
+    except Exception as e:
+        print(f"  警告: API呼び出しに失敗しました ({e})。このチャンクをスキップします。", file=sys.stderr)
+        return []
 
     raw = response.content[0].text.strip()
     raw = re.sub(r'^```(?:json)?\s*', '', raw)
@@ -126,20 +131,21 @@ PRIORITY_MAP = {
 def _task_row_html(idx: int, task: dict) -> str:
     priority = task.get("priority", "中")
     css_class, label = PRIORITY_MAP.get(priority, ("priority-mid", priority))
+    e = html_module.escape
     return f"""
     <tr id="row-{idx}" class="task-row active-row">
       <td>{idx}</td>
-      <td class="task-content">{task.get('content', '')}</td>
-      <td>{task.get('assignee', '未定')}</td>
-      <td>{task.get('deadline', '未定')}</td>
+      <td class="task-content">{e(task.get('content', ''))}</td>
+      <td>{e(task.get('assignee', '未定'))}</td>
+      <td>{e(task.get('deadline', '未定'))}</td>
       <td><span class="badge {css_class}">{label}</span></td>
       <td>
         <button class="status-btn" data-id="{idx}" onclick="cycleStatus({idx})">
           <span id="status-{idx}">未着手</span>
         </button>
       </td>
-      <td>{task.get('speaker', '')}</td>
-      <td>{task.get('datetime', '')}</td>
+      <td>{e(task.get('speaker', ''))}</td>
+      <td>{e(task.get('datetime', ''))}</td>
     </tr>"""
 
 
