@@ -143,3 +143,45 @@ class TestDeduplicateTasks(unittest.TestCase):
 
     def test_empty_list(self):
         self.assertEqual(line_tasks.deduplicate_tasks([]), [])
+
+
+class TestGenerateHtml(unittest.TestCase):
+
+    SAMPLE_TASKS = [
+        {"content": "見積書を提出する", "assignee": "田中",
+         "deadline": "4/28", "priority": "高",
+         "speaker": "課長", "datetime": "2026/04/20(月) 10:35"},
+        {"content": "在庫チェックをする", "assignee": "鈴木",
+         "deadline": "未定", "priority": "中",
+         "speaker": "田中", "datetime": "2026/04/20(月) 11:00"},
+    ]
+    SAMPLE_META = {
+        "start_date": "2026/04/20",
+        "end_date": "2026/04/20",
+        "generated_at": "2026-04-26",
+    }
+
+    def test_returns_html_string(self):
+        html = line_tasks.generate_html(self.SAMPLE_TASKS, self.SAMPLE_META)
+        self.assertIsInstance(html, str)
+        self.assertIn("<!DOCTYPE html>", html)
+
+    def test_contains_task_content(self):
+        html = line_tasks.generate_html(self.SAMPLE_TASKS, self.SAMPLE_META)
+        self.assertIn("見積書を提出する", html)
+        self.assertIn("在庫チェックをする", html)
+
+    def test_contains_meta_info(self):
+        html = line_tasks.generate_html(self.SAMPLE_TASKS, self.SAMPLE_META)
+        self.assertIn("2026/04/20", html)
+        self.assertIn("2026-04-26", html)
+
+    def test_contains_javascript(self):
+        html = line_tasks.generate_html(self.SAMPLE_TASKS, self.SAMPLE_META)
+        self.assertIn("<script>", html)
+        self.assertIn("localStorage", html)
+
+    def test_priority_colors_present(self):
+        html = line_tasks.generate_html(self.SAMPLE_TASKS, self.SAMPLE_META)
+        self.assertIn("priority-high", html)
+        self.assertIn("priority-mid", html)
