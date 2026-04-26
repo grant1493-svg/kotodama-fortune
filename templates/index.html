@@ -1,3 +1,171 @@
 <!DOCTYPE html>
-<html lang="ja"><head><meta charset="UTF-8"><title>LINEタスク抽出</title></head>
-<body><p>準備中</p></body></html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LINEタスク抽出ツール</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Hiragino Sans', 'Meiryo', sans-serif;
+      background: #f5f7fa;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 40px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+    h1 { font-size: 22px; color: #1a1a2e; margin-bottom: 8px; }
+    .subtitle { font-size: 14px; color: #888; margin-bottom: 32px; }
+    .dropzone {
+      border: 2px dashed #4a90e2;
+      border-radius: 12px;
+      padding: 48px 24px;
+      background: #f0f7ff;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      margin-bottom: 16px;
+    }
+    .dropzone.dragover {
+      background: #dbeeff;
+      border-color: #1a6fcc;
+    }
+    .dropzone .icon { font-size: 48px; margin-bottom: 12px; }
+    .dropzone .main-text { font-size: 16px; font-weight: bold; color: #333; margin-bottom: 6px; }
+    .dropzone .or { font-size: 13px; color: #aaa; margin-bottom: 14px; }
+    .btn-select {
+      display: inline-block;
+      background: #4a90e2;
+      color: #fff;
+      padding: 10px 28px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      transition: background 0.2s;
+    }
+    .btn-select:hover { background: #357abd; }
+    .hint { font-size: 12px; color: #bbb; margin-bottom: 20px; }
+    #status {
+      display: none;
+      padding: 14px 18px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+    #status.processing { background: #e8f4fd; color: #1a6fcc; border: 1px solid #b3d9f7; }
+    #status.error { background: #fff0f0; color: #cc0000; border: 1px solid #ffb3b3; }
+    #file-input { display: none; }
+    #result { display: none; margin-top: 24px; }
+    .result-btn {
+      display: inline-block;
+      background: #52c41a;
+      color: #fff;
+      padding: 12px 32px;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+      border: none;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+    .result-btn:hover { background: #389e0d; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <h1>LINEタスク抽出ツール</h1>
+  <p class="subtitle">LINEのトーク履歴からタスクをAIが自動抽出します</p>
+
+  <div class="dropzone" id="dropzone">
+    <div class="icon">📂</div>
+    <div class="main-text">ここにファイルをドロップ</div>
+    <div class="or">または</div>
+    <button class="btn-select" onclick="document.getElementById('file-input').click()">
+      ファイルを選択
+    </button>
+  </div>
+  <div class="hint">対応形式: .txt（LINEのトーク履歴エクスポート）</div>
+  <input type="file" id="file-input" accept=".txt">
+
+  <div id="status"></div>
+  <div id="result">
+    <button class="result-btn" id="open-btn">タスク表を開く</button>
+  </div>
+</div>
+
+<script>
+  let resultHtml = "";
+
+  const dropzone = document.getElementById("dropzone");
+  const fileInput = document.getElementById("file-input");
+  const status = document.getElementById("status");
+  const result = document.getElementById("result");
+
+  dropzone.addEventListener("dragover", e => {
+    e.preventDefault();
+    dropzone.classList.add("dragover");
+  });
+  dropzone.addEventListener("dragleave", () => dropzone.classList.remove("dragover"));
+  dropzone.addEventListener("drop", e => {
+    e.preventDefault();
+    dropzone.classList.remove("dragover");
+    const file = e.dataTransfer.files[0];
+    if (file) processFile(file);
+  });
+  fileInput.addEventListener("change", () => {
+    if (fileInput.files[0]) processFile(fileInput.files[0]);
+  });
+
+  function showStatus(msg, type) {
+    status.textContent = msg;
+    status.className = type;
+    status.style.display = "block";
+  }
+
+  async function processFile(file) {
+    if (!file.name.endsWith(".txt")) {
+      showStatus(".txtファイルを選択してください", "error");
+      return;
+    }
+
+    result.style.display = "none";
+    showStatus("⏳ AIがタスクを抽出中です。しばらくお待ちください...", "processing");
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const resp = await fetch("/upload", { method: "POST", body: formData });
+      const contentType = resp.headers.get("content-type") || "";
+
+      if (contentType.includes("text/html")) {
+        resultHtml = await resp.text();
+        status.style.display = "none";
+        result.style.display = "block";
+      } else {
+        const data = await resp.json();
+        showStatus("エラー: " + (data.error || "不明なエラーが発生しました"), "error");
+      }
+    } catch (e) {
+      showStatus("エラー: サーバーに接続できませんでした", "error");
+    }
+  }
+
+  document.getElementById("open-btn").addEventListener("click", () => {
+    const win = window.open("", "_blank");
+    win.document.write(resultHtml);
+    win.document.close();
+  });
+</script>
+</body>
+</html>
