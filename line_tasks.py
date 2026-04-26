@@ -12,9 +12,13 @@ from datetime import date
 NON_TEXT_PATTERNS = re.compile(
     r'^\[(スタンプ|写真|動画|ファイル|ボイスメッセージ|GIF|連絡先|位置情報)\]$'
 )
-MESSAGE_PATTERN = re.compile(
-    r'^(\d{4}/\d{2}/\d{2}\([月火水木金土日]\) \d{2}:\d{2})\t(.+?)\t(.+)$'
+# 旧形式: YYYY/MM/DD(曜日) HH:MM\t送信者\t本文
+MESSAGE_PATTERN_OLD = re.compile(
+    r'^(\d{4}/\d{1,2}/\d{1,2}\([月火水木金土日]\) \d{2}:\d{2})\t(.+?)\t(.+)$'
 )
+# 新形式: 日付行 + HH:MM\t送信者\t本文
+DATE_LINE_PATTERN = re.compile(r'^(\d{4}/\d{1,2}/\d{1,2})\([月火水木金土日]\)$')
+MESSAGE_PATTERN_NEW = re.compile(r'^(\d{2}:\d{2})\t(.+?)\t(.+)$')
 
 SYSTEM_PROMPT = """あなたはLINEのグループチャットを分析してタスクを抽出するアシスタントです。
 会話の中からタスク・依頼・指示を抽出し、必ず以下のJSON形式のみを返してください。
@@ -37,17 +41,37 @@ SYSTEM_PROMPT = """あなたはLINEのグループチャットを分析してタ
 def parse_line_log(text: str) -> dict:
     messages = []
     dates = []
+    current_date = ""
 
     for line in text.splitlines():
         line = line.strip()
-        m = MESSAGE_PATTERN.match(line)
-        if not m:
+        if not line:
             continue
-        dt, sender, body = m.group(1), m.group(2), m.group(3)
-        if NON_TEXT_PATTERNS.match(body.strip()):
+
+        # 旧形式を試す
+        m = MESSAGE_PATTERN_OLD.match(line)
+        if m:
+            dt, sender, body = m.group(1), m.group(2), m.group(3)
+            if not NON_TEXT_PATTERNS.match(body.strip()):
+                messages.append({"datetime": dt, "sender": sender, "text": body})
+                dates.append(dt[:10])
             continue
-        messages.append({"datetime": dt, "sender": sender, "text": body})
-        dates.append(dt[:10])
+
+        # 日付行を検出（新形式）
+        d = DATE_LINE_PATTERN.match(line)
+        if d:
+            current_date = d.group(1)
+            continue
+
+        # 新形式のメッセージ行
+        if current_date:
+            m2 = MESSAGE_PATTERN_NEW.match(line)
+            if m2:
+                time, sender, body = m2.group(1), m2.group(2), m2.group(3)
+                if not NON_TEXT_PATTERNS.match(body.strip()):
+                    dt = f"{current_date} {time}"
+                    messages.append({"datetime": dt, "sender": sender, "text": body})
+                    dates.append(current_date)
 
     return {
         "messages": messages,
