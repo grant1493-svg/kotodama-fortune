@@ -6,7 +6,7 @@ import json
 import os
 import re
 import sys
-from datetime import date
+from datetime import date, timedelta
 
 
 NON_TEXT_PATTERNS = re.compile(
@@ -38,10 +38,39 @@ SYSTEM_PROMPT = """あなたはLINEのグループチャットを分析してタ
 }"""
 
 
-def parse_line_log(text: str) -> dict:
+def _parse_date_str(date_str: str):
+    """YYYY/M/D または YYYY/MM/DD を date オブジェクトに変換"""
+    try:
+        parts = date_str.split("/")
+        return date(int(parts[0]), int(parts[1]), int(parts[2]))
+    except Exception:
+        return None
+
+
+def _cutoff_date(months: int = 2) -> date:
+    """今日からN ヶ月前の日付を返す"""
+    today = date.today()
+    # 月をまたぐ計算: 単純に60日/61日で近似せず月単位で計算
+    month = today.month - months
+    year = today.year
+    while month <= 0:
+        month += 12
+        year -= 1
+    try:
+        return date(year, month, today.day)
+    except ValueError:
+        # 月末日の調整（例: 3/31 - 1ヶ月 → 2/28）
+        import calendar
+        last_day = calendar.monthrange(year, month)[1]
+        return date(year, month, last_day)
+
+
+def parse_line_log(text: str, max_months: int = 2) -> dict:
     messages = []
     dates = []
     current_date = ""
+    cutoff = _cutoff_date(max_months)
+    current_date_obj = None
 
     for line in text.splitlines():
         line = line.strip()
@@ -52,19 +81,22 @@ def parse_line_log(text: str) -> dict:
         m = MESSAGE_PATTERN_OLD.match(line)
         if m:
             dt, sender, body = m.group(1), m.group(2), m.group(3)
-            if not NON_TEXT_PATTERNS.match(body.strip()):
+            date_part = dt[:10]  # YYYY/MM/DD
+            d_obj = _parse_date_str(date_part)
+            if d_obj and d_obj >= cutoff and not NON_TEXT_PATTERNS.match(body.strip()):
                 messages.append({"datetime": dt, "sender": sender, "text": body})
-                dates.append(dt[:10])
+                dates.append(date_part)
             continue
 
         # 日付行を検出（新形式）
         d = DATE_LINE_PATTERN.match(line)
         if d:
             current_date = d.group(1)
+            current_date_obj = _parse_date_str(current_date)
             continue
 
         # 新形式のメッセージ行
-        if current_date:
+        if current_date and current_date_obj and current_date_obj >= cutoff:
             m2 = MESSAGE_PATTERN_NEW.match(line)
             if m2:
                 time, sender, body = m2.group(1), m2.group(2), m2.group(3)
@@ -382,6 +414,12 @@ def main():
         default=None,
         help="出力HTMLファイル名（省略時: tasks_YYYYMMDD.html）"
     )
+    parser.add_argument(
+        "--months", "-m",
+        type=int,
+        default=2,
+        help="直近何ヶ月分を対象にするか（デフォルト: 2）"
+    )
     args = parser.parse_args()
 
     if not os.path.exists(args.logfile):
@@ -397,9 +435,9 @@ def main():
     with open(args.logfile, encoding="utf-8") as f:
         raw_text = f.read()
 
-    parsed = parse_line_log(raw_text)
+    parsed = parse_line_log(raw_text, max_months=args.months)
     messages = parsed["messages"]
-    print(f"{len(messages)} 件のメッセージを解析しました")
+    print(f"{len(messages)} 件のメッセージを解析しました（直近{args.months}ヶ月分）")
 
     import anthropic
     client = anthropic.Anthropic(api_key=api_key)
