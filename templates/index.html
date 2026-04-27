@@ -25,7 +25,39 @@
       text-align: center;
     }
     h1 { font-size: 22px; color: #1a1a2e; margin-bottom: 8px; }
-    .subtitle { font-size: 14px; color: #888; margin-bottom: 32px; }
+    .subtitle { font-size: 14px; color: #888; margin-bottom: 24px; }
+    .key-section {
+      background: #f8f9ff;
+      border: 1px solid #d0d9f0;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 24px;
+      text-align: left;
+    }
+    .key-section label { font-size: 13px; color: #555; font-weight: bold; display: block; margin-bottom: 8px; }
+    .key-row { display: flex; gap: 8px; }
+    .key-input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: monospace;
+    }
+    .key-btn {
+      padding: 8px 16px;
+      background: #4a90e2;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .key-btn:hover { background: #357abd; }
+    .key-status { font-size: 12px; margin-top: 6px; color: #888; }
+    .key-status.ok { color: #52c41a; }
+    .key-status.err { color: #cc0000; }
     .dropzone {
       border: 2px dashed #4a90e2;
       border-radius: 12px;
@@ -35,10 +67,7 @@
       transition: background 0.2s, border-color 0.2s;
       margin-bottom: 16px;
     }
-    .dropzone.dragover {
-      background: #dbeeff;
-      border-color: #1a6fcc;
-    }
+    .dropzone.dragover { background: #dbeeff; border-color: #1a6fcc; }
     .dropzone .icon { font-size: 48px; margin-bottom: 12px; }
     .dropzone .main-text { font-size: 16px; font-weight: bold; color: #333; margin-bottom: 6px; }
     .dropzone .or { font-size: 13px; color: #aaa; margin-bottom: 14px; }
@@ -86,6 +115,15 @@
   <h1>LINEタスク抽出ツール</h1>
   <p class="subtitle">LINEのトーク履歴からタスクをAIが自動抽出します</p>
 
+  <div class="key-section">
+    <label>Anthropic APIキー</label>
+    <div class="key-row">
+      <input type="password" class="key-input" id="key-input" placeholder="sk-ant-...">
+      <button class="key-btn" onclick="saveKey()">保存</button>
+    </div>
+    <div class="key-status" id="key-status">キーを入力して「保存」を押してください</div>
+  </div>
+
   <div class="dropzone" id="dropzone">
     <div class="icon">📂</div>
     <div class="main-text">ここにファイルをドロップ</div>
@@ -106,59 +144,59 @@
 <script>
   let resultHtml = "";
 
+  async function saveKey() {
+    const key = document.getElementById("key-input").value.trim();
+    const st = document.getElementById("key-status");
+    if (!key) { st.textContent = "キーを入力してください"; st.className = "key-status err"; return; }
+    st.textContent = "保存中..."; st.className = "key-status";
+    try {
+      const resp = await fetch("/set-key", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({key})
+      });
+      const data = await resp.json();
+      if (data.ok) { st.textContent = "✅ キーを保存しました"; st.className = "key-status ok"; }
+      else { st.textContent = "エラー: " + data.error; st.className = "key-status err"; }
+    } catch(e) { st.textContent = "保存に失敗しました"; st.className = "key-status err"; }
+  }
+
   const dropzone = document.getElementById("dropzone");
   const fileInput = document.getElementById("file-input");
   const status = document.getElementById("status");
   const result = document.getElementById("result");
 
-  dropzone.addEventListener("dragover", e => {
-    e.preventDefault();
-    dropzone.classList.add("dragover");
-  });
+  dropzone.addEventListener("dragover", e => { e.preventDefault(); dropzone.classList.add("dragover"); });
   dropzone.addEventListener("dragleave", () => dropzone.classList.remove("dragover"));
   dropzone.addEventListener("drop", e => {
-    e.preventDefault();
-    dropzone.classList.remove("dragover");
+    e.preventDefault(); dropzone.classList.remove("dragover");
     const file = e.dataTransfer.files[0];
     if (file) processFile(file);
   });
-  fileInput.addEventListener("change", () => {
-    if (fileInput.files[0]) processFile(fileInput.files[0]);
-  });
+  fileInput.addEventListener("change", () => { if (fileInput.files[0]) processFile(fileInput.files[0]); });
 
   function showStatus(msg, type) {
-    status.textContent = msg;
-    status.className = type;
-    status.style.display = "block";
+    status.textContent = msg; status.className = type; status.style.display = "block";
   }
 
   async function processFile(file) {
-    if (!file.name.endsWith(".txt")) {
-      showStatus(".txtファイルを選択してください", "error");
-      return;
-    }
-
+    if (!file.name.endsWith(".txt")) { showStatus(".txtファイルを選択してください", "error"); return; }
     result.style.display = "none";
-    showStatus("⏳ AIがタスクを抽出中です。しばらくお待ちください...", "processing");
-
+    showStatus("⏳ AIがタスクを抽出中です。しばらくお待ちください（30秒〜2分）...", "processing");
     const formData = new FormData();
     formData.append("file", file);
-
     try {
       const resp = await fetch("/upload", { method: "POST", body: formData });
       const contentType = resp.headers.get("content-type") || "";
-
       if (contentType.includes("text/html")) {
         resultHtml = await resp.text();
         status.style.display = "none";
         result.style.display = "block";
       } else {
         const data = await resp.json();
-        showStatus("エラー: " + (data.error || "不明なエラーが発生しました"), "error");
+        showStatus("エラー: " + (data.error || "不明なエラー"), "error");
       }
-    } catch (e) {
-      showStatus("エラー: サーバーに接続できませんでした", "error");
-    }
+    } catch(e) { showStatus("エラー: サーバーに接続できませんでした", "error"); }
   }
 
   document.getElementById("open-btn").addEventListener("click", () => {
