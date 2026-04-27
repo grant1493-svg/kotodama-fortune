@@ -191,17 +191,17 @@ def _task_row_html(idx: int, task: dict) -> str:
     return f"""
     <tr id="row-{idx}" class="task-row active-row">
       <td>{idx}</td>
-      <td class="task-content">{e(task.get('content', ''))}</td>
-      <td>{e(task.get('assignee', '未定'))}</td>
-      <td>{e(task.get('deadline', '未定'))}</td>
-      <td><span class="badge {css_class}">{label}</span></td>
+      <td contenteditable="true" data-id="{idx}" data-field="content" onblur="saveEdit(this)" class="editable task-content">{e(task.get('content', ''))}</td>
+      <td contenteditable="true" data-id="{idx}" data-field="assignee" onblur="saveEdit(this)" class="editable">{e(task.get('assignee', '未定'))}</td>
+      <td contenteditable="true" data-id="{idx}" data-field="deadline" onblur="saveEdit(this)" class="editable">{e(task.get('deadline', '未定'))}</td>
+      <td><span class="badge {css_class}" id="priority-{idx}" onclick="cyclePriority({idx})" style="cursor:pointer">{label}</span></td>
       <td>
         <button class="status-btn" data-id="{idx}" onclick="cycleStatus({idx})">
           <span id="status-{idx}">未着手</span>
         </button>
       </td>
-      <td>{e(task.get('speaker', ''))}</td>
-      <td>{e(task.get('datetime', ''))}</td>
+      <td contenteditable="true" data-id="{idx}" data-field="speaker" onblur="saveEdit(this)" class="editable">{e(task.get('speaker', ''))}</td>
+      <td contenteditable="true" data-id="{idx}" data-field="datetime" onblur="saveEdit(this)" class="editable">{e(task.get('datetime', ''))}</td>
     </tr>"""
 
 
@@ -251,6 +251,9 @@ def generate_html(tasks: list, meta: dict) -> str:
     .completed-section summary::-webkit-details-marker {{ display: none; }}
     .completed-row td {{ color: #aaa; text-decoration: line-through; }}
     .completed-row .status-btn {{ background: #52c41a; color: #fff; border-color: #52c41a; }}
+    .editable {{ cursor: text; }}
+    .editable:hover {{ background: #fffde7; outline: 1px dashed #ffc107; }}
+    .editable:focus {{ background: #fff9e6; outline: 2px solid #ffc107; border-radius: 3px; }}
     .move-anim {{ animation: slideDown 0.3s ease; }}
     @keyframes slideDown {{ from {{ opacity: 0; transform: translateY(-10px); }} to {{ opacity: 1; transform: translateY(0); }} }}
     @media print {{
@@ -325,6 +328,9 @@ def generate_html(tasks: list, meta: dict) -> str:
 
 <script>
   const STATUS_CYCLE = ['未着手', '進行中', '完了'];
+  const PRIORITY_CYCLE = ['高', '中', '低'];
+  const PRIORITY_CSS = {{'高':'priority-high','中':'priority-mid','低':'priority-low'}};
+  const EDIT_KEY = '{storage_key}_edits';
   const STATUS_KEY = '{storage_key}';
 
   function loadState() {{
@@ -394,10 +400,48 @@ def generate_html(tasks: list, meta: dict) -> str:
     }});
   }}
 
+  function saveEdit(el) {{
+    const id = el.dataset.id;
+    const field = el.dataset.field;
+    const edits = JSON.parse(localStorage.getItem(EDIT_KEY) || '{{}}');
+    if (!edits[id]) edits[id] = {{}};
+    edits[id][field] = el.textContent;
+    localStorage.setItem(EDIT_KEY, JSON.stringify(edits));
+  }}
+
+  function cyclePriority(id) {{
+    const span = document.getElementById('priority-' + id);
+    if (!span) return;
+    const cur = span.textContent.trim();
+    const next = PRIORITY_CYCLE[(PRIORITY_CYCLE.indexOf(cur) + 1) % PRIORITY_CYCLE.length];
+    span.textContent = next;
+    span.className = 'badge ' + PRIORITY_CSS[next];
+    const edits = JSON.parse(localStorage.getItem(EDIT_KEY) || '{{}}');
+    if (!edits[id]) edits[id] = {{}};
+    edits[id]['priority'] = next;
+    localStorage.setItem(EDIT_KEY, JSON.stringify(edits));
+  }}
+
   (function restoreState() {{
     const state = loadState();
     Object.entries(state).forEach(([id, status]) => applyStatusToRow(Number(id), status));
     updateDoneCount();
+    // 編集内容を復元
+    const edits = JSON.parse(localStorage.getItem(EDIT_KEY) || '{{}}');
+    Object.entries(edits).forEach(([id, fields]) => {{
+      Object.entries(fields).forEach(([field, val]) => {{
+        if (field === 'priority') {{
+          const span = document.getElementById('priority-' + id);
+          if (span) {{ span.textContent = val; span.className = 'badge ' + (PRIORITY_CSS[val] || 'priority-mid'); }}
+        }} else {{
+          const row = document.getElementById('row-' + id);
+          if (row) {{
+            const el = row.querySelector('[data-field="' + field + '"]');
+            if (el) el.textContent = val;
+          }}
+        }}
+      }});
+    }});
   }})();
 </script>
 </body>
