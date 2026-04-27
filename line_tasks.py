@@ -190,18 +190,18 @@ def _task_row_html(idx: int, task: dict) -> str:
     e = html_module.escape
     return f"""
     <tr id="row-{idx}" class="task-row active-row">
-      <td>{idx}</td>
-      <td contenteditable="true" data-id="{idx}" data-field="content" onblur="saveEdit(this)" class="editable task-content">{e(task.get('content', ''))}</td>
-      <td contenteditable="true" data-id="{idx}" data-field="assignee" onblur="saveEdit(this)" class="editable">{e(task.get('assignee', '未定'))}</td>
-      <td contenteditable="true" data-id="{idx}" data-field="deadline" onblur="saveEdit(this)" class="editable">{e(task.get('deadline', '未定'))}</td>
-      <td><span class="badge {css_class}" id="priority-{idx}" onclick="cyclePriority({idx})" style="cursor:pointer">{label}</span></td>
-      <td>
+      <td data-label="#">{idx}</td>
+      <td data-label="タスク内容" contenteditable="true" data-id="{idx}" data-field="content" onblur="saveEdit(this)" class="editable task-content">{e(task.get('content', ''))}</td>
+      <td data-label="担当者" contenteditable="true" data-id="{idx}" data-field="assignee" onblur="saveEdit(this)" class="editable">{e(task.get('assignee', '未定'))}</td>
+      <td data-label="期限" contenteditable="true" data-id="{idx}" data-field="deadline" onblur="saveEdit(this)" class="editable">{e(task.get('deadline', '未定'))}</td>
+      <td data-label="優先度"><span class="badge {css_class}" id="priority-{idx}" onclick="cyclePriority({idx})" style="cursor:pointer">{label}</span></td>
+      <td data-label="進捗状況">
         <button class="status-btn" data-id="{idx}" onclick="cycleStatus({idx})">
           <span id="status-{idx}">未着手</span>
         </button>
       </td>
-      <td contenteditable="true" data-id="{idx}" data-field="speaker" onblur="saveEdit(this)" class="editable">{e(task.get('speaker', ''))}</td>
-      <td contenteditable="true" data-id="{idx}" data-field="datetime" onblur="saveEdit(this)" class="editable">{e(task.get('datetime', ''))}</td>
+      <td data-label="発言者" contenteditable="true" data-id="{idx}" data-field="speaker" onblur="saveEdit(this)" class="editable">{e(task.get('speaker', ''))}</td>
+      <td data-label="発言日時" contenteditable="true" data-id="{idx}" data-field="datetime" onblur="saveEdit(this)" class="editable">{e(task.get('datetime', ''))}</td>
     </tr>"""
 
 
@@ -256,6 +256,43 @@ def generate_html(tasks: list, meta: dict) -> str:
     .editable:focus {{ background: #fff9e6; outline: 2px solid #ffc107; border-radius: 3px; }}
     .move-anim {{ animation: slideDown 0.3s ease; }}
     @keyframes slideDown {{ from {{ opacity: 0; transform: translateY(-10px); }} to {{ opacity: 1; transform: translateY(0); }} }}
+    @media (max-width: 700px) {{
+      body {{ padding: 10px; }}
+      .header {{ padding: 14px 16px; }}
+      .header h1 {{ font-size: 17px; }}
+      .header .meta {{ flex-direction: column; gap: 4px; }}
+      .controls {{ flex-direction: column; align-items: flex-start; gap: 10px; padding: 12px 16px; }}
+      .table-wrap {{ border-radius: 0; box-shadow: none; overflow-x: visible; }}
+      table, thead, tbody, th, td, tr {{ display: block; }}
+      thead tr {{ display: none; }}
+      tbody tr {{
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        margin-bottom: 12px;
+        padding: 8px 4px;
+        background: #fff;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      }}
+      tbody td {{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 14px;
+        border-bottom: 1px solid #f5f5f5;
+        font-size: 13px;
+        min-height: 36px;
+      }}
+      tbody td:last-child {{ border-bottom: none; }}
+      tbody td::before {{
+        content: attr(data-label);
+        font-weight: bold;
+        color: #888;
+        font-size: 12px;
+        min-width: 72px;
+        flex-shrink: 0;
+      }}
+      .editable {{ text-align: right; flex: 1; margin-left: 8px; }}
+    }}
     @media print {{
       .controls {{ display: none; }}
       body {{ background: #fff; padding: 0; }}
