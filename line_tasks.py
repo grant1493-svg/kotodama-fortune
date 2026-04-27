@@ -202,6 +202,7 @@ def _task_row_html(idx: int, task: dict) -> str:
       </td>
       <td data-label="発言者" contenteditable="true" data-id="{idx}" data-field="speaker" onblur="saveEdit(this)" class="editable">{e(task.get('speaker', ''))}</td>
       <td data-label="発言日時" contenteditable="true" data-id="{idx}" data-field="datetime" onblur="saveEdit(this)" class="editable">{e(task.get('datetime', ''))}</td>
+      <td data-label="メモ" class="memo-cell"><div contenteditable="true" data-id="{idx}" data-field="memo" onblur="saveEdit(this)" class="editable memo-box" placeholder="メモを入力..."></div></td>
     </tr>"""
 
 
@@ -251,6 +252,22 @@ def generate_html(tasks: list, meta: dict) -> str:
     .completed-section summary::-webkit-details-marker {{ display: none; }}
     .completed-row td {{ color: #aaa; text-decoration: line-through; }}
     .completed-row .status-btn {{ background: #52c41a; color: #fff; border-color: #52c41a; }}
+    .memo-cell {{ min-width: 160px; }}
+    .memo-box {{
+      min-height: 36px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid #e0e0e0;
+      background: #fafafa;
+      font-size: 13px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      cursor: text;
+      transition: border-color 0.2s, background 0.2s;
+    }}
+    .memo-box:empty::before {{ content: attr(placeholder); color: #ccc; pointer-events: none; }}
+    .memo-box:hover {{ border-color: #ffc107; background: #fffde7; }}
+    .memo-box:focus {{ border-color: #ffc107; background: #fff9e6; outline: none; }}
     .editable {{ cursor: text; }}
     .editable:hover {{ background: #fffde7; outline: 1px dashed #ffc107; }}
     .editable:focus {{ background: #fff9e6; outline: 2px solid #ffc107; border-radius: 3px; }}
@@ -338,6 +355,7 @@ def generate_html(tasks: list, meta: dict) -> str:
         <th>進捗状況</th>
         <th>発言者</th>
         <th>発言日時</th>
+        <th>メモ</th>
       </tr>
     </thead>
     <tbody id="active-body">
@@ -355,7 +373,7 @@ def generate_html(tasks: list, meta: dict) -> str:
       <thead>
         <tr>
           <th>#</th><th>タスク内容</th><th>担当者</th><th>期限</th>
-          <th>優先度</th><th>進捗状況</th><th>発言者</th><th>発言日時</th>
+          <th>優先度</th><th>進捗状況</th><th>発言者</th><th>発言日時</th><th>メモ</th>
         </tr>
       </thead>
       <tbody id="done-body"></tbody>
