@@ -453,8 +453,6 @@ if uploaded_file is not None:
             st.warning("整理結果に表示するデータがありません。")
 
         else:
-            st.subheader("整理結果")
-
             categories = ["すべて"] + sorted(current_df["分類"].unique().tolist())
             selected_category = st.selectbox("分類で絞り込み", categories)
 
@@ -466,8 +464,13 @@ if uploaded_file is not None:
             display_df = display_df.reset_index(drop=True)
             display_df.insert(0, "削除", False)
 
-            st.write("削除したいログは左端の「削除」にチェックを入れて、下の削除ボタンを押してください。")
-            st.write("進捗状況はプルダウンで選択できます。備考欄には自由に入力できます。")
+            section_title("整理結果", count=len(display_df))
+            st.markdown(
+                "<p style='font-size:12px;color:#64748b;margin-bottom:8px;'>"
+                "削除したいログは左端の「削除」にチェックを入れて、下の削除ボタンを押してください。"
+                "進捗状況はプルダウンで選択できます。備考欄には自由に入力できます。</p>",
+                unsafe_allow_html=True,
+            )
 
             editor_key = f"editor_{file_hash}_{selected_category}_{len(current_df)}"
 
@@ -545,7 +548,7 @@ if uploaded_file is not None:
                     st.success(f"{len(delete_ids)} 件を整理結果から削除し、削除結果一覧へ移動しました。")
                     st.rerun()
 
-        st.subheader("分類別件数")
+        section_title("分類別件数")
 
         if st.session_state.current_df.empty:
             st.warning("分類別件数を表示するデータがありません。")
@@ -554,7 +557,7 @@ if uploaded_file is not None:
             count_df.columns = ["分類", "件数"]
             st.dataframe(count_df, use_container_width=True, hide_index=True)
 
-        st.subheader("削除結果一覧")
+        section_title("削除結果一覧", count=len(st.session_state.deleted_df))
 
         if st.session_state.deleted_df.empty:
             st.write("削除されたログはまだありません。")
