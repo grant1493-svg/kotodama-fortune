@@ -424,7 +424,11 @@ if uploaded_file is not None:
             st.session_state.parse_failed = False
 
     st.success("ファイルを読み込みました。")
-    st.write(f"ファイル名：{uploaded_file.name}")
+    render_header(
+        filename=uploaded_file.name,
+        start_date=st.session_state.start_date,
+        latest_date=st.session_state.latest_date,
+    )
 
     if st.session_state.get("parse_failed"):
         st.warning("ログを表に変換できませんでした。LINEのトーク履歴形式を確認してください。")
