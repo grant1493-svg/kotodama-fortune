@@ -555,7 +555,9 @@ if uploaded_file is not None:
         else:
             count_df = st.session_state.current_df["分類"].value_counts().reset_index()
             count_df.columns = ["分類", "件数"]
-            st.dataframe(count_df, use_container_width=True, hide_index=True)
+            cols = st.columns(min(len(count_df), 4))
+            for i, row in count_df.iterrows():
+                cols[i % 4].metric(label=row["分類"], value=f'{row["件数"]}件')
 
         section_title("削除結果一覧", count=len(st.session_state.deleted_df))
 
