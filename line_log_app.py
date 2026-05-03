@@ -7,11 +7,105 @@ from datetime import datetime
 
 st.set_page_config(page_title="LINEログ整理アプリ", layout="wide")
 
-st.title("LINEログ整理アプリ")
-st.write(
-    "LINEのトーク履歴をアップロードすると、ファイル内の最新日付から直近3か月分だけ抽出し、"
-    "重複を除いて整理します。"
-)
+
+def _inject_css():
+    st.markdown("""
+    <style>
+    /* ── ページ背景 ── */
+    .stApp { background: #f1f5f9; }
+    .main .block-container {
+        padding-top: 24px !important;
+        padding-bottom: 40px !important;
+    }
+
+    /* ── ファイルアップローダー ── */
+    [data-testid="stFileUploader"] {
+        background: rgba(13,148,136,0.04);
+        border: 2px dashed #99f6e4;
+        border-radius: 10px;
+        padding: 8px;
+        transition: border-color 0.2s;
+    }
+    [data-testid="stFileUploader"]:hover {
+        border-color: #0d9488;
+    }
+
+    /* ── 削除ボタン（primary） ── */
+    div.stButton > button[kind="primary"] {
+        background: #ef4444 !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 10px 20px !important;
+        font-weight: 700 !important;
+        font-size: 13px !important;
+        box-shadow: 0 2px 8px rgba(239,68,68,0.25) !important;
+        transition: all 0.2s !important;
+    }
+    div.stButton > button[kind="primary"]:hover {
+        background: #dc2626 !important;
+        box-shadow: 0 4px 12px rgba(239,68,68,0.35) !important;
+    }
+
+    /* ── ダウンロードボタン ── */
+    div.stDownloadButton > button {
+        background: linear-gradient(135deg, #0f766e, #0d9488) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 11px 24px !important;
+        font-weight: 700 !important;
+        font-size: 13px !important;
+        box-shadow: 0 3px 12px rgba(13,148,136,0.30) !important;
+        transition: all 0.2s !important;
+        width: auto !important;
+    }
+    div.stDownloadButton > button:hover {
+        box-shadow: 0 5px 16px rgba(13,148,136,0.40) !important;
+    }
+
+    /* ── セレクトボックス ── */
+    [data-testid="stSelectbox"] > div > div {
+        border-color: #cbd5e1 !important;
+        border-radius: 8px !important;
+        background: white !important;
+    }
+    [data-testid="stSelectbox"] > div > div:focus-within {
+        border-color: #0d9488 !important;
+        box-shadow: 0 0 0 3px rgba(13,148,136,0.15) !important;
+    }
+
+    /* ── データエディター ── */
+    [data-testid="stDataEditor"] {
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 10px !important;
+        overflow: hidden !important;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important;
+    }
+
+    /* ── メトリクスカード ── */
+    [data-testid="stMetric"] {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 16px !important;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+    [data-testid="metric-container"] {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 16px !important;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+
+    /* ── st.success / st.warning の角丸 ── */
+    [data-testid="stNotification"] {
+        border-radius: 8px !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 
 CATEGORY_RULES = {
     "事故": ["事故", "接触", "ぶつけ", "破損", "クレーム", "巻き込み", "転倒", "怪我", "けが"],
@@ -201,6 +295,95 @@ def to_excel(main_df, deleted_df):
     output.seek(0)
     return output
 
+
+def render_header(filename=None, start_date=None, latest_date=None):
+    period_html = ""
+    if filename and start_date is not None and latest_date is not None:
+        period_html = f"""
+        <div style="text-align:right;">
+          <div style="color:white;font-size:13px;font-weight:600;">{filename}</div>
+          <div style="color:#ccfbf1;font-size:11px;margin-top:2px;">
+            対象期間: {start_date.strftime('%Y/%m/%d')} 〜 {latest_date.strftime('%Y/%m/%d')}
+          </div>
+        </div>"""
+    st.markdown(f"""
+    <div style="background:linear-gradient(135deg,#0f766e,#0d9488);
+                padding:20px 28px;border-radius:12px;
+                display:flex;align-items:center;justify-content:space-between;
+                margin-bottom:20px;box-shadow:0 4px 16px rgba(13,148,136,0.25);">
+      <div>
+        <div style="color:white;font-size:20px;font-weight:700;letter-spacing:0.02em;">
+          LINE ログ整理アプリ
+        </div>
+        <div style="color:#99f6e4;font-size:12px;margin-top:3px;">
+          物流チーム用 · トーク履歴管理ツール
+        </div>
+      </div>
+      {period_html}
+    </div>
+    """, unsafe_allow_html=True)
+
+
+def render_kpi_cards(current_df, deleted_df):
+    total = len(current_df)
+    accident = int(current_df["分類"].eq("事故").sum()) if not current_df.empty else 0
+    vehicle = int(current_df["分類"].eq("車両").sum()) if not current_df.empty else 0
+    unhandled = int(current_df["進捗状況"].eq("未対応").sum()) if not current_df.empty else 0
+
+    def card(label, value, color, sub):
+        return f"""
+        <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:16px;
+                    box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+          <div style="width:8px;height:8px;border-radius:50%;background:{color};margin-bottom:8px;"></div>
+          <div style="font-size:11px;color:#94a3b8;font-weight:600;letter-spacing:0.06em;
+                      text-transform:uppercase;margin-bottom:6px;">{label}</div>
+          <div style="font-size:28px;font-weight:800;color:{color};line-height:1;">{value}</div>
+          <div style="font-size:10px;color:#94a3b8;margin-top:4px;">{sub}</div>
+        </div>"""
+
+    col1, col2, col3, col4 = st.columns(4)
+    col1.markdown(card("総件数", total, "#0d9488", "直近3か月"), unsafe_allow_html=True)
+    col2.markdown(card("事故", accident, "#ef4444", "要対応"), unsafe_allow_html=True)
+    col3.markdown(card("車両関連", vehicle, "#f59e0b", "点検・修理含む"), unsafe_allow_html=True)
+    col4.markdown(card("未対応", unhandled, "#6366f1", "要確認"), unsafe_allow_html=True)
+    st.markdown("<div style='margin-bottom:16px;'></div>", unsafe_allow_html=True)
+
+
+def render_info_banner(date_removed, duplicate_removed, start_date, latest_date):
+    if start_date is None or latest_date is None:
+        return
+    st.markdown(f"""
+    <div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:8px;
+                padding:10px 16px;font-size:12px;color:#0f766e;
+                display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+      <span style="width:6px;height:6px;border-radius:50%;background:#0d9488;
+                   flex-shrink:0;display:inline-block;"></span>
+      抽出基準日: <strong>{latest_date.strftime('%Y/%m/%d')}</strong> &nbsp;|&nbsp;
+      対象期間: <strong>{start_date.strftime('%Y/%m/%d')} 〜 {latest_date.strftime('%Y/%m/%d')}</strong>
+      &nbsp;|&nbsp; 期間外除外: <strong>{date_removed}件</strong>
+      &nbsp;|&nbsp; 重複削除: <strong>{duplicate_removed}件</strong>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+def section_title(text, count=None):
+    count_html = (
+        f'<span style="font-weight:400;font-size:12px;color:#94a3b8;'
+        f'text-transform:none;letter-spacing:0;margin-left:6px;">{count}件</span>'
+        if count is not None else ""
+    )
+    st.markdown(f"""
+    <div style="display:flex;align-items:center;gap:8px;margin:20px 0 12px;">
+      <span style="font-size:13px;font-weight:700;color:#475569;
+                   letter-spacing:0.08em;text-transform:uppercase;">{text}</span>
+      {count_html}
+      <div style="flex:1;height:1px;background:#e2e8f0;"></div>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+_inject_css()
+render_header()
 
 uploaded_file = st.file_uploader(
     "LINEログのテキストファイルをアップロードしてください",
