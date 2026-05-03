@@ -438,18 +438,16 @@ if uploaded_file is not None:
         latest_date = st.session_state.latest_date
         start_date = st.session_state.start_date
 
-        if latest_date is not None:
-            st.info(f"抽出基準日：{latest_date.strftime('%Y/%m/%d')}")
-            st.info(f"対象期間：{start_date.strftime('%Y/%m/%d')} ～ {latest_date.strftime('%Y/%m/%d')}")
-
-        st.info(f"対象期間外のデータを {st.session_state.date_removed_count} 件除外しました。")
-        st.info(f"重複データを {st.session_state.duplicate_removed_count} 件削除しました。")
-
         current_df = st.session_state.current_df.copy()
         deleted_df = st.session_state.deleted_df.copy()
 
-        st.write(f"現在の整理結果：{len(current_df)} 件")
-        st.write(f"削除結果一覧：{len(deleted_df)} 件")
+        render_kpi_cards(current_df, deleted_df)
+        render_info_banner(
+            st.session_state.date_removed_count,
+            st.session_state.duplicate_removed_count,
+            start_date,
+            latest_date,
+        )
 
         if current_df.empty:
             st.warning("整理結果に表示するデータがありません。")
