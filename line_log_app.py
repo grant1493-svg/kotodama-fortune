@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import re
 import hashlib
+import html
 from io import BytesIO
 from datetime import datetime
 
@@ -299,9 +300,10 @@ def to_excel(main_df, deleted_df):
 def render_header(filename=None, start_date=None, latest_date=None):
     period_html = ""
     if filename and start_date is not None and latest_date is not None:
+        safe_filename = html.escape(filename)
         period_html = f"""
         <div style="text-align:right;">
-          <div style="color:white;font-size:13px;font-weight:600;">{filename}</div>
+          <div style="color:white;font-size:13px;font-weight:600;">{safe_filename}</div>
           <div style="color:#ccfbf1;font-size:11px;margin-top:2px;">
             対象期間: {start_date.strftime('%Y/%m/%d')} 〜 {latest_date.strftime('%Y/%m/%d')}
           </div>
@@ -383,7 +385,8 @@ def section_title(text, count=None):
 
 
 _inject_css()
-render_header()
+if "file_hash" not in st.session_state:
+    render_header()
 
 uploaded_file = st.file_uploader(
     "LINEログのテキストファイルをアップロードしてください",
@@ -520,7 +523,7 @@ if uploaded_file is not None:
 
             if st.button("チェックしたログを削除して、削除結果一覧へ移動する", type="primary"):
                 delete_ids = edited_df.loc[
-                    edited_df["削除"].fillna(False) == True,
+                    edited_df["削除"].fillna(False),
                     "ログID"
                 ].tolist()
 
