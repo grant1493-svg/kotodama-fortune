@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}名前を登録する — ことだま占い{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="app-header">
+    <div class="app-logo">🔮</div>
+    <div class="app-name">ことだま占い</div>
+    <div class="app-tagline">AIとリアルデータが紡ぐ、今日のあなたへのメッセージ</div>
+  </div>
+
+  <form method="post" action="{{ url_for('register') }}" id="registerForm">
+    <div class="card">
+      <div class="field-label">✨ 姓（漢字）</div>
+      <input class="cute-input" type="text" name="sei" id="sei" placeholder="例：田中" required>
+
+      <div class="field-label">✨ 名（漢字）</div>
+      <input class="cute-input" type="text" name="mei" id="mei" placeholder="例：花" required>
+
+      <div class="field-label">🌸 読み（ひらがな）</div>
+      <input class="cute-input" type="text" name="yomi" id="yomi" placeholder="例：たなか はな" required>
+
+      <div class="field-label">📍 お住まいの地域</div>
+      <select class="cute-input" name="region" id="region">
+        <option value="東京">東京</option>
+        <option value="大阪">大阪</option>
+        <option value="名古屋">名古屋</option>
+        <option value="札幌">札幌</option>
+        <option value="福岡">福岡</option>
+        <option value="仙台">仙台</option>
+        <option value="広島">広島</option>
+        <option value="京都">京都</option>
+        <option value="神戸">神戸</option>
+        <option value="横浜">横浜</option>
+      </select>
+
+      <p class="consent-text">
+        🔒 入力した名前はAI占い生成のためAnthropicのサーバーに送信されます。
+        端末への永続保存は行いません。
+        <a href="{{ url_for('privacy') }}" style="color:#b06090">プライバシーポリシー</a>
+      </p>
+
+      <button type="submit" class="btn-primary">🌟 今日の言霊を受け取る</button>
+    </div>
+  </form>
+</div>
+
+<script>
+(function() {
+  var sei = localStorage.getItem("kotodama_sei");
+  var mei = localStorage.getItem("kotodama_mei");
+  var yomi = localStorage.getItem("kotodama_yomi");
+  var region = localStorage.getItem("kotodama_region");
+  if (sei && mei && yomi) {
+    document.getElementById("sei").value = sei;
+    document.getElementById("mei").value = mei;
+    document.getElementById("yomi").value = yomi;
+    if (region) document.getElementById("region").value = region;
+  }
+})();
+
+document.getElementById("registerForm").addEventListener("submit", function() {
+  localStorage.setItem("kotodama_sei", document.getElementById("sei").value);
+  localStorage.setItem("kotodama_mei", document.getElementById("mei").value);
+  localStorage.setItem("kotodama_yomi", document.getElementById("yomi").value);
+  localStorage.setItem("kotodama_region", document.getElementById("region").value);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,261 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --pink: #f06292;
+  --pink-light: #fce4ec;
+  --purple: #ce93d8;
+  --purple-light: #f3e5f5;
+  --text: #444;
+  --text-muted: #999;
+  --radius: 18px;
+  --radius-sm: 10px;
+}
+
+body {
+  font-family: 'Hiragino Maru Gothic ProN', 'BIZ UDPGothic', 'Noto Sans JP', sans-serif;
+  background: linear-gradient(160deg, #fff0f6 0%, #f3e8ff 50%, #e8f4ff 100%);
+  min-height: 100vh;
+  color: var(--text);
+  font-size: 15px;
+}
+
+.container { max-width: 480px; margin: 0 auto; padding: 20px 16px 40px; }
+
+/* ── Header ── */
+.app-header { text-align: center; padding: 28px 0 20px; }
+.app-logo { font-size: 48px; margin-bottom: 6px; }
+.app-name { font-size: 22px; font-weight: bold; color: #c2185b; }
+.app-tagline { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+/* ── Cards ── */
+.card {
+  background: white;
+  border-radius: var(--radius);
+  border: 1.5px solid var(--pink-light);
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 12px rgba(200, 100, 180, 0.08);
+}
+.card-title { font-size: 12px; font-weight: bold; color: #b06090; margin-bottom: 10px; }
+
+/* ── Register form ── */
+.field-label { font-size: 11px; color: #b06090; font-weight: bold; margin: 14px 0 4px; }
+.cute-input {
+  width: 100%;
+  border: 2px solid var(--pink-light);
+  border-radius: 22px;
+  padding: 10px 16px;
+  font-size: 15px;
+  outline: none;
+  background: #fff8fb;
+  color: var(--text);
+  transition: border-color 0.2s;
+}
+.cute-input:focus { border-color: var(--pink); }
+
+select.cute-input { cursor: pointer; }
+
+.consent-text { font-size: 11px; color: var(--text-muted); margin: 14px 0; line-height: 1.6; }
+
+.btn-primary {
+  width: 100%;
+  background: linear-gradient(135deg, var(--pink), var(--purple));
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(240, 98, 146, 0.35);
+  margin-top: 6px;
+  transition: opacity 0.2s;
+}
+.btn-primary:hover { opacity: 0.9; }
+
+/* ── Streak bar ── */
+.streak-bar {
+  background: linear-gradient(135deg, #fff3e0, #fce4ec);
+  border: 1.5px solid #ffcc80;
+  border-radius: 14px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.streak-count { font-size: 22px; font-weight: bold; color: #e65100; }
+.streak-label { font-size: 11px; color: #bf360c; font-weight: bold; }
+.badges { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
+.badge {
+  font-size: 10px; padding: 3px 9px;
+  border-radius: 10px; background: #ffe0b2; color: #e65100; font-weight: bold;
+}
+.badge.earned { background: #ff8f00; color: white; }
+
+/* ── Countdown ── */
+.countdown-bar {
+  background: #f3e5f5;
+  border-radius: 12px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: #7b1fa2;
+}
+.countdown-bar.urgent { background: #fce4ec; color: #c2185b; }
+.countdown-time { font-weight: bold; font-size: 15px; }
+
+/* ── Morning banner ── */
+.morning-banner {
+  background: linear-gradient(135deg, #fff8e1, #e8f5e9);
+  border: 1.5px dashed #aed581;
+  border-radius: 14px;
+  padding: 13px 16px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+.morning-label { font-size: 10px; color: #558b2f; font-weight: bold; margin-bottom: 5px; }
+.morning-label .new { background: #e91e63; color: white; font-size: 9px; padding: 2px 6px; border-radius: 6px; margin-left: 4px; }
+.morning-text { font-size: 13px; color: #33691e; line-height: 1.7; }
+.morning-ended { opacity: 0.5; }
+
+/* ── Date header ── */
+.date-header {
+  background: linear-gradient(135deg, var(--pink-light), var(--purple-light));
+  border-radius: 14px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+.date-text { font-size: 11px; color: var(--text-muted); }
+.date-greeting { font-size: 16px; font-weight: bold; color: #c2185b; margin-top: 4px; }
+
+/* ── Stars ── */
+.stars-row { display: flex; justify-content: space-around; }
+.star-item { text-align: center; }
+.star-item .label { font-size: 10px; color: var(--text-muted); margin-bottom: 3px; }
+.star-item .stars { font-size: 15px; }
+
+/* ── Fortune bubbles ── */
+.bubble {
+  background: white;
+  border: 1.5px solid var(--pink-light);
+  border-radius: 16px;
+  padding: 13px 16px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  line-height: 1.75;
+  color: #555;
+}
+.bubble-title { font-size: 11px; font-weight: bold; color: #c2185b; margin-bottom: 6px; }
+.data-chip {
+  display: inline-block;
+  background: var(--purple-light);
+  color: #7b1fa2;
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-size: 10px;
+  margin: 2px;
+}
+
+/* ── Lucky strip ── */
+.lucky-strip {
+  background: linear-gradient(135deg, #fff8e1, var(--pink-light));
+  border-radius: 14px;
+  padding: 11px 16px;
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: #b06090;
+  margin-bottom: 14px;
+}
+
+/* ── Share buttons ── */
+.share-row { display: flex; gap: 10px; margin-bottom: 8px; }
+.btn-share {
+  flex: 1;
+  border: none;
+  border-radius: 22px;
+  padding: 11px 8px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.btn-share:hover { opacity: 0.85; }
+.btn-share-x { background: #1a1a1a; color: white; }
+.btn-share-line { background: #06c755; color: white; }
+.share-sub { text-align: center; font-size: 11px; color: var(--text-muted); margin-bottom: 14px; }
+
+/* ── Ad placeholder ── */
+.ad-slot {
+  min-height: 90px;
+  background: #fafafa;
+  border: 1px dashed #ddd;
+  border-radius: var(--radius-sm);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: #ccc;
+}
+
+/* ── Cookie banner ── */
+.cookie-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-top: 1px solid var(--pink-light);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  color: #666;
+  z-index: 999;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
+}
+.cookie-banner button {
+  background: var(--pink);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 7px 16px;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* ── Footer ── */
+.footer {
+  text-align: center;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--pink-light);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.footer a { color: #b06090; text-decoration: none; margin: 0 6px; }
+.footer a:hover { text-decoration: underline; }
+.reset-link { display: block; margin-top: 10px; font-size: 11px; color: var(--text-muted); }
+
+/* ── Legal pages ── */
+.legal-container { max-width: 680px; margin: 0 auto; padding: 24px 20px 60px; }
+.legal-container h1 { font-size: 20px; color: #c2185b; margin-bottom: 20px; }
+.legal-container h2 { font-size: 15px; color: #555; margin: 20px 0 8px; }
+.legal-container p, .legal-container li { font-size: 13px; line-height: 1.8; color: #666; }
+.legal-container ul { padding-left: 18px; }
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .container { padding: 16px 12px 32px; }
+  .lucky-strip { gap: 10px; }
+}
