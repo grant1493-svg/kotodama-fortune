@@ -111,6 +111,24 @@ def test_full_fortune_flow(client):
     assert "今日は素晴らしい" in body
 
 
+def test_fortune_shows_fallback_when_api_fails(client):
+    with client.session_transaction() as sess:
+        sess["sei"] = "田中"
+        sess["mei"] = "花"
+        sess["yomi"] = "たなか はな"
+        sess["region"] = "東京"
+
+    with patch("app.get_cached", return_value=None), \
+         patch("app.get_today_stats", side_effect=Exception("network error")), \
+         patch("app.generate_fortune", side_effect=Exception("API error")), \
+         patch("app.set_cached", return_value=None):
+        resp = client.get("/fortune")
+
+    assert resp.status_code == 200
+    body = resp.data.decode("utf-8")
+    assert "田中" in body  # name still shown
+
+
 def test_reset_clears_session(client):
     with client.session_transaction() as sess:
         sess["sei"] = "田中"

@@ -38,10 +38,29 @@ def build_prompt(name_analysis: dict, today_stats: dict) -> tuple[str, str]:
     return _SYSTEM_PROMPT, user
 
 
+_REQUIRED_KEYS = {"kotodama_analysis", "today_message", "morning_message", "scores", "lucky"}
+_REQUIRED_SCORE_KEYS = {"overall", "love", "work", "money"}
+_REQUIRED_LUCKY_KEYS = {"color", "time", "place", "number"}
+
+
+def _validate_fortune(data: dict) -> dict:
+    """Raise ValueError if required keys are missing."""
+    missing = _REQUIRED_KEYS - data.keys()
+    if missing:
+        raise ValueError(f"Claude response missing keys: {missing}")
+    missing_scores = _REQUIRED_SCORE_KEYS - data["scores"].keys()
+    if missing_scores:
+        raise ValueError(f"Claude response missing score keys: {missing_scores}")
+    missing_lucky = _REQUIRED_LUCKY_KEYS - data["lucky"].keys()
+    if missing_lucky:
+        raise ValueError(f"Claude response missing lucky keys: {missing_lucky}")
+    return data
+
+
 def parse_fortune_response(text: str) -> dict:
     """Extract and parse JSON from Claude response. Strips markdown fences if present."""
     cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", text.strip(), flags=re.MULTILINE)
-    return json.loads(cleaned)
+    return _validate_fortune(json.loads(cleaned))
 
 
 def generate_fortune(name_analysis: dict, today_stats: dict) -> dict:

@@ -48,6 +48,12 @@ def test_parse_fortune_response_wrapped_in_markdown():
     assert result["scores"]["overall"] == 4
 
 
+def test_parse_fortune_response_missing_key_raises():
+    bad = json.dumps({"kotodama_analysis": "x", "today_message": "y"})  # missing keys
+    with pytest.raises(ValueError, match="missing keys"):
+        parse_fortune_response(bad)
+
+
 def test_generate_fortune_calls_claude_and_returns_dict(monkeypatch):
     mock_client = MagicMock()
     mock_message = MagicMock()

@@ -7,7 +7,7 @@ CACHE_DIR = Path(__file__).parent / ".fortune_cache"
 
 def make_cache_key(sei: str, mei: str, date_iso: str) -> str:
     raw = f"{sei}{mei}{date_iso}"
-    return hashlib.md5(raw.encode()).hexdigest()
+    return hashlib.sha256(raw.encode()).hexdigest()
 
 
 def _cache_path(key: str) -> Path:
