@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}{{ sei }}{{ mei }}さんの今日の占い — ことだま占い{% endblock %}
+{% block content %}
+<div class="container">
+
+  <!-- Streak bar (populated by app.js) -->
+  <div class="streak-bar">
+    <div>
+      <span style="font-size:22px">🔥</span>
+      <span class="streak-count" id="streakCount">1</span>
+      <span class="streak-label">日連続チェック中！</span>
+    </div>
+    <div>
+      <div style="font-size:10px;color:#aaa;margin-bottom:4px;text-align:right">達成バッジ</div>
+      <div class="badges" id="badgesRow">
+        <span class="badge" id="badge3">3日🎀</span>
+        <span class="badge" id="badge7">7日⭐</span>
+        <span class="badge" id="badge30">30日👑</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Countdown timer -->
+  <div class="countdown-bar" id="countdownBar">
+    <span>⏰ 今日の占いは <strong>23:59</strong> にリセット</span>
+    <span class="countdown-time" id="countdownTime">--:--:--</span>
+  </div>
+
+  <!-- AdSense top slot -->
+  <div class="ad-slot">
+    <!-- ins class="adsbygoogle" ... -->
+    広告
+  </div>
+
+  <!-- Morning banner -->
+  <div class="morning-banner" id="morningBanner">
+    <div class="morning-label">🌅 朝イチ限定メッセージ <span class="new">NEW</span></div>
+    <div class="morning-text">{{ fortune.morning_message }}</div>
+  </div>
+  <div class="morning-banner morning-ended" id="morningEnded" style="display:none">
+    <div class="morning-label">🌅 朝イチ限定メッセージ（本日分は終了）</div>
+    <div class="morning-text" style="font-size:11px">明日の朝もお楽しみに 🌸</div>
+  </div>
+
+  <!-- Date header -->
+  <div class="date-header">
+    <div class="date-text">
+      {{ stats.date }}（{{ stats.weekday }}）{{ stats.rokuyo }}
+      {% if stats.sekki %}・{{ stats.sekki }}{% endif %}
+      {{ stats.weather }} / {{ stats.pressure }}hPa
+    </div>
+    <div class="date-greeting">{{ sei }} {{ mei }}さんへ 🌸</div>
+  </div>
+
+  <!-- Scores -->
+  <div class="card">
+    <div class="card-title">📊 今日の統計運勢</div>
+    <div class="stars-row">
+      {% for label, key in [("総合","overall"),("恋愛","love"),("仕事","work"),("金運","money")] %}
+      <div class="star-item">
+        <div class="label">{{ label }}</div>
+        <div class="stars">{{ "⭐" * fortune.scores[key] }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Kotodama analysis -->
+  <div class="bubble">
+    <div class="bubble-title">🌸 言霊分析</div>
+    {{ fortune.kotodama_analysis }}
+    <br>
+    <span class="data-chip">{{ stats.rokuyo }}</span>
+    <span class="data-chip">{{ stats.weather }}</span>
+    {% if stats.sekki %}<span class="data-chip">{{ stats.sekki }}</span>{% endif %}
+  </div>
+
+  <!-- Today message -->
+  <div class="bubble">
+    <div class="bubble-title">💌 今日のメッセージ</div>
+    {{ fortune.today_message }}
+  </div>
+
+  <!-- AdSense mid slot -->
+  <div class="ad-slot">
+    <!-- ins class="adsbygoogle" ... -->
+    広告
+  </div>
+
+  <!-- Lucky -->
+  <div class="lucky-strip">
+    <span>🎨 {{ fortune.lucky.color }}</span>
+    <span>⏰ {{ fortune.lucky.time }}</span>
+    <span>📍 {{ fortune.lucky.place }}</span>
+    <span>🔢 {{ fortune.lucky.number }}</span>
+  </div>
+
+  <!-- Share -->
+  <div class="share-row">
+    <button class="btn-share btn-share-x" id="shareX">𝕏 シェア</button>
+    <button class="btn-share btn-share-line" id="shareLine">LINE シェア</button>
+  </div>
+  <p class="share-sub">友達と一緒に占うと相性が分かるかも🔮</p>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div>
+      <a href="{{ url_for('privacy') }}">プライバシーポリシー</a>
+      <a href="{{ url_for('tokushoho') }}">特定商取引法</a>
+      <a href="{{ url_for('disclaimer') }}">免責事項</a>
+    </div>
+    <a href="{{ url_for('reset') }}" class="reset-link">名前を変更する</a>
+    <div style="margin-top:8px">© 2026 ことだま占い — AIによる娯楽コンテンツです</div>
+  </div>
+</div>
+
+<script>
+  var FORTUNE_SEI = {{ sei | tojson }};
+  var FORTUNE_MEI = {{ mei | tojson }};
+  var FORTUNE_MESSAGE = {{ fortune.today_message | tojson }};
+  var FORTUNE_SCORES = {{ fortune.scores | tojson }};
+</script>
+{% endblock %}
