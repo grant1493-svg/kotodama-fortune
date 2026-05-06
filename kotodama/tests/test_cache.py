@@ -40,3 +40,26 @@ def test_cache_persists_as_json(tmp_path, monkeypatch):
     assert len(files) == 1
     saved = json.loads(files[0].read_text(encoding="utf-8"))
     assert saved["score"] == 5
+
+
+def test_get_cached_image_miss_returns_none():
+    from cache import get_cached_image
+    assert get_cached_image("no-such-key") is None
+
+
+def test_set_and_get_cached_image(tmp_path, monkeypatch):
+    monkeypatch.setattr("cache.CACHE_DIR", tmp_path)
+    from cache import get_cached_image, set_cached_image
+    png_bytes = b"\x89PNG\r\n\x1a\nfake"
+    set_cached_image("img-key", png_bytes)
+    result = get_cached_image("img-key")
+    assert result == png_bytes
+
+
+def test_cached_image_stored_as_png_file(tmp_path, monkeypatch):
+    monkeypatch.setattr("cache.CACHE_DIR", tmp_path)
+    from cache import set_cached_image
+    set_cached_image("my-img", b"PNGDATA")
+    files = list(tmp_path.glob("*.png"))
+    assert len(files) == 1
+    assert files[0].name == "my-img.png"

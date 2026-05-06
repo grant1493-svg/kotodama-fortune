@@ -27,3 +27,15 @@ def set_cached(key: str, data: dict) -> None:
         json.dumps(data, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
+
+
+def get_cached_image(key: str) -> bytes | None:
+    path = CACHE_DIR / f"{key}.png"
+    if not path.exists():
+        return None
+    return path.read_bytes()
+
+
+def set_cached_image(key: str, data: bytes) -> None:
+    CACHE_DIR.mkdir(exist_ok=True)
+    (CACHE_DIR / f"{key}.png").write_bytes(data)
