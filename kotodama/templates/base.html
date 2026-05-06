@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}ことだま占い{% endblock %}</title>
+  <meta name="description" content="AIとリアルデータが紡ぐ、今日のあなたへの言霊占い">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <!-- Google AdSense: paste your AdSense <script> tag here after approval -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+</head>
+<body>
+  {% block content %}{% endblock %}
+
+  <!-- Cookie banner -->
+  <div class="cookie-banner" id="cookieBanner" style="display:none">
+    <span>このサイトはGoogle AdSenseのCookieを使用します。
+      <a href="{{ url_for('privacy') }}" style="color:#b06090">詳細</a>
+    </span>
+    <button onclick="acceptCookies()">同意する</button>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
