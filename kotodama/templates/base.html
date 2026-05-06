@@ -6,6 +6,16 @@
   <title>{% block title %}ことだま占い{% endblock %}</title>
   <meta name="description" content="AIとリアルデータが紡ぐ、今日のあなたへの言霊占い">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block ogp %}
+  <meta property="og:title" content="{{ og_title | default('ことだま占い') }}">
+  <meta property="og:description" content="{{ og_description | default('AIとリアルデータが紡ぐ、今日のあなたへの言霊占い') }}">
+  <meta property="og:image" content="{{ og_image_url | default('') }}">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ og_title | default('ことだま占い') }}">
+  <meta name="twitter:description" content="{{ og_description | default('AIとリアルデータが紡ぐ、今日のあなたへの言霊占い') }}">
+  <meta name="twitter:image" content="{{ og_image_url | default('') }}">
+  {% endblock %}
   <!-- Google AdSense: paste your AdSense <script> tag here after approval -->
   <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
 </head>

@@ -137,3 +137,28 @@ def test_reset_clears_session(client):
     assert resp.status_code == 302
     with client.session_transaction() as sess:
         assert "sei" not in sess
+
+
+def test_fortune_page_has_ogp_tags(client):
+    with client.session_transaction() as sess:
+        sess["sei"] = "田中"
+        sess["mei"] = "花"
+        sess["yomi"] = "たなか はな"
+        sess["region"] = "東京"
+
+    with patch("app.get_cached", return_value=SAMPLE_FORTUNE), \
+         patch("app.get_today_stats", return_value=SAMPLE_STATS):
+        resp = client.get("/fortune")
+
+    html = resp.data.decode("utf-8")
+    assert 'property="og:title"' in html
+    assert 'name="twitter:card"' in html
+    assert "summary_large_image" in html
+    assert "/fortune/image.png" in html
+
+
+def test_register_page_has_default_ogp(client):
+    resp = client.get("/register")
+    html = resp.data.decode("utf-8")
+    assert 'property="og:title"' in html
+    assert "ことだま占い" in html

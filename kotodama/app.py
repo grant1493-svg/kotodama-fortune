@@ -72,12 +72,16 @@ def fortune():
                 "lucky": {"color": "ピンク", "time": "午前中", "place": "お気に入りの場所", "number": 7},
             }
 
+    base_url = request.url_root.rstrip("/")
     return render_template(
         "fortune.html",
         sei=sei,
         mei=mei,
         stats=today_stats,
         fortune=fortune_data,
+        og_title=f"{sei}{mei}さんの今日の言霊 | ことだま占い",
+        og_description=fortune_data["kotodama_analysis"][:80],
+        og_image_url=f"{base_url}/fortune/image.png",
     )
 
 
