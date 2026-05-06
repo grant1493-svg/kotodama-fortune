@@ -1,11 +1,12 @@
-from flask import Flask, redirect, render_template, request, session, url_for
+from flask import Flask, Response, abort, redirect, render_template, request, session, url_for
 from dotenv import load_dotenv
 import os
 
-from cache import get_cached, make_cache_key, set_cached
+from cache import get_cached, get_cached_image, make_cache_key, set_cached, set_cached_image
 from fortune_engine import generate_fortune
 from name_analyzer import analyze_name
 from stats_fetcher import get_today_stats
+from image_generator import generate_fortune_image
 
 load_dotenv()
 
@@ -104,6 +105,38 @@ def tokushoho():
 @app.route("/disclaimer")
 def disclaimer():
     return render_template("disclaimer.html")
+
+
+@app.route("/fortune/image.png")
+def fortune_image():
+    if "sei" not in session:
+        abort(404)
+
+    sei = session["sei"]
+    mei = session["mei"]
+    region = session.get("region", "東京")
+
+    try:
+        today_stats = get_today_stats(region)
+    except Exception:
+        today_stats = {
+            "date": "本日", "date_iso": "2000-01-01", "weekday": "本日",
+            "rokuyo": "大安", "sekki": None, "is_holiday": False,
+            "weather": "不明", "temperature": 20.0, "pressure": 1013.0, "humidity": 60,
+        }
+
+    image_key = make_cache_key(sei, mei, today_stats["date_iso"]) + "-image"
+    cached = get_cached_image(image_key)
+    if cached:
+        return Response(cached, mimetype="image/png")
+
+    fortune_data = get_cached(make_cache_key(sei, mei, today_stats["date_iso"]))
+    if fortune_data is None:
+        abort(404)
+
+    png_bytes = generate_fortune_image(sei, mei, today_stats, fortune_data)
+    set_cached_image(image_key, png_bytes)
+    return Response(png_bytes, mimetype="image/png")
 
 
 if __name__ == "__main__":

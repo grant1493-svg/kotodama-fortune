@@ -162,3 +162,46 @@ def test_register_page_has_default_ogp(client):
     html = resp.data.decode("utf-8")
     assert 'property="og:title"' in html
     assert "ことだま占い" in html
+
+
+def test_fortune_image_without_session_returns_404(client):
+    resp = client.get("/fortune/image.png")
+    assert resp.status_code == 404
+
+
+def test_fortune_image_with_session_returns_png(client):
+    with client.session_transaction() as sess:
+        sess["sei"] = "田中"
+        sess["mei"] = "花"
+        sess["yomi"] = "たなか はな"
+        sess["region"] = "東京"
+
+    fake_png = b"\x89PNG\r\n\x1a\nfakedata"
+
+    with patch("app.get_cached_image", return_value=None), \
+         patch("app.get_cached", return_value=SAMPLE_FORTUNE), \
+         patch("app.get_today_stats", return_value=SAMPLE_STATS), \
+         patch("app.generate_fortune_image", return_value=fake_png), \
+         patch("app.set_cached_image", return_value=None):
+        resp = client.get("/fortune/image.png")
+
+    assert resp.status_code == 200
+    assert resp.content_type == "image/png"
+    assert resp.data == fake_png
+
+
+def test_fortune_image_returns_cached_png(client):
+    with client.session_transaction() as sess:
+        sess["sei"] = "田中"
+        sess["mei"] = "花"
+        sess["yomi"] = "たなか はな"
+        sess["region"] = "東京"
+
+    cached_png = b"\x89PNG\r\n\x1a\ncacheddata"
+
+    with patch("app.get_cached_image", return_value=cached_png), \
+         patch("app.get_today_stats", return_value=SAMPLE_STATS):
+        resp = client.get("/fortune/image.png")
+
+    assert resp.status_code == 200
+    assert resp.data == cached_png
