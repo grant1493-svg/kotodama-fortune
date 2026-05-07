@@ -5,6 +5,7 @@ import os
 from cache import get_cached, get_cached_image, make_cache_key, set_cached, set_cached_image
 from fortune_engine import generate_fortune
 from name_analyzer import analyze_name
+from popular_names import get_name_entry, get_related_names
 from stats_fetcher import get_today_stats
 from image_generator import generate_fortune_image
 
@@ -137,6 +138,29 @@ def fortune_image():
     png_bytes = generate_fortune_image(sei, mei, today_stats, fortune_data)
     set_cached_image(image_key, png_bytes)
     return Response(png_bytes, mimetype="image/png")
+
+
+@app.route("/name/<mei>")
+def name_page(mei: str):
+    entry = get_name_entry(mei)
+    if entry is None:
+        abort(404)
+
+    analysis = analyze_name("", entry["kanji"], mei)
+    related  = get_related_names(mei, count=5)
+
+    mei_meanings_str = "・".join(analysis["mei_meanings"][:3])
+    og_desc = f"{mei_meanings_str} の意味を持つ「{entry['kanji']}」。言霊キーワードと今日の運勢を無料でチェック。"
+
+    return render_template(
+        "name_page.html",
+        name=entry,
+        analysis=analysis,
+        related=related,
+        og_title=f"「{entry['kanji']}」の言霊占い — 名前に宿る意味と今日の運勢 | ことだま占い",
+        og_description=og_desc,
+        og_image_url="",
+    )
 
 
 if __name__ == "__main__":

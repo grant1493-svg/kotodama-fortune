@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}「{{ name.kanji }}」の言霊占い — 名前に宿る意味と今日の運勢 | ことだま占い{% endblock %}
+{% block ogp %}
+<meta property="og:title" content="{{ og_title }}">
+<meta property="og:description" content="{{ og_description }}">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="{{ og_title }}">
+<meta name="twitter:description" content="{{ og_description }}">
+{% endblock %}
+{% block content %}
+<div class="container">
+
+  <!-- Hero -->
+  <div class="app-header">
+    <div class="app-logo">🔮</div>
+    <div class="app-name">「{{ name.kanji }}」の言霊</div>
+    <div class="app-tagline">{{ name.mei }}（{{ name.kanji }}）— 名前に宿る意味と言霊</div>
+  </div>
+
+  <!-- Kanji analysis -->
+  <div class="card">
+    <div class="card-title">🌸 言霊分析</div>
+    <div style="font-size:36px;font-weight:bold;color:#c2185b;margin-bottom:6px">{{ name.kanji }}</div>
+    <div style="font-size:13px;color:#888;margin-bottom:10px">総画数: {{ analysis.total_strokes }}画</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+      {% for kw in analysis.personality_keywords %}
+      <span class="data-chip">{{ kw }}</span>
+      {% endfor %}
+    </div>
+    <div style="font-size:13px;color:#555;line-height:1.9">
+      {% for meaning in analysis.mei_meanings %}
+      <span>{{ meaning }}</span>{% if not loop.last %} ・ {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Score preview (static 3 stars) -->
+  <div class="card">
+    <div class="card-title">📊 今日の運勢プレビュー</div>
+    <div class="stars-row">
+      {% for label in ["総合", "恋愛", "仕事", "金運"] %}
+      <div class="star-item">
+        <div class="label">{{ label }}</div>
+        <div class="stars">⭐⭐⭐</div>
+      </div>
+      {% endfor %}
+    </div>
+    <p style="text-align:center;font-size:11px;color:#aaa;margin-top:10px">
+      ※ 名前を入力すると今日の正確な運勢が出ます
+    </p>
+  </div>
+
+  <!-- CTA -->
+  <a href="{{ url_for('register') }}" style="text-decoration:none">
+    <button class="btn-primary">✨ 今すぐ「{{ name.kanji }}」の言霊を占う →</button>
+  </a>
+
+  <!-- Related names -->
+  <div class="card" style="margin-top:14px">
+    <div class="card-title">🔮 他の名前の言霊も見る</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px">
+      {% for rel in related %}
+      <a href="{{ url_for('name_page', mei=rel.mei) }}"
+         style="text-decoration:none">
+        <span class="data-chip" style="font-size:12px;padding:5px 12px;cursor:pointer">
+          {{ rel.kanji }}
+        </span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="footer">
+    <div>
+      <a href="{{ url_for('privacy') }}">プライバシーポリシー</a>
+      <a href="{{ url_for('disclaimer') }}">免責事項</a>
+    </div>
+    <div style="margin-top:8px">© 2026 ことだま占い — AIによる娯楽コンテンツです</div>
+  </div>
+</div>
+{% endblock %}

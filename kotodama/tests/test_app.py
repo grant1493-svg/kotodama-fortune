@@ -205,3 +205,29 @@ def test_fortune_image_returns_cached_png(client):
 
     assert resp.status_code == 200
     assert resp.data == cached_png
+
+
+def test_name_page_known_name_returns_200(client):
+    resp = client.get("/name/さくら")
+    assert resp.status_code == 200
+    body = resp.data.decode("utf-8")
+    assert "桜" in body
+    assert "今すぐ" in body
+
+
+def test_name_page_unknown_name_returns_404(client):
+    resp = client.get("/name/ぞんざい")
+    assert resp.status_code == 404
+
+
+def test_name_page_has_ogp_title(client):
+    resp = client.get("/name/さくら")
+    html = resp.data.decode("utf-8")
+    assert "言霊占い" in html
+    assert 'property="og:title"' in html
+
+
+def test_name_page_has_cta_link(client):
+    resp = client.get("/name/さくら")
+    html = resp.data.decode("utf-8")
+    assert "/register" in html
