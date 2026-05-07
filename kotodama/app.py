@@ -140,6 +140,14 @@ def fortune_image():
     return Response(png_bytes, mimetype="image/png")
 
 
+@app.route("/sitemap.xml")
+def sitemap():
+    from popular_names import POPULAR_NAMES
+    base_url = request.url_root.rstrip("/")
+    xml = render_template("sitemap.xml", base_url=base_url, names=POPULAR_NAMES)
+    return Response(xml, mimetype="application/xml")
+
+
 @app.route("/name/<mei>")
 def name_page(mei: str):
     entry = get_name_entry(mei)

@@ -231,3 +231,18 @@ def test_name_page_has_cta_link(client):
     resp = client.get("/name/さくら")
     html = resp.data.decode("utf-8")
     assert "/register" in html
+
+
+def test_sitemap_returns_xml(client):
+    resp = client.get("/sitemap.xml")
+    assert resp.status_code == 200
+    assert "xml" in resp.content_type
+    body = resp.data.decode("utf-8")
+    assert "<urlset" in body
+    assert "/name/" in body
+
+
+def test_sitemap_contains_all_50_names(client):
+    resp = client.get("/sitemap.xml")
+    body = resp.data.decode("utf-8")
+    assert body.count("<loc>") >= 51  # 1 root + 50 name pages
