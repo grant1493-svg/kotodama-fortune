@@ -1,17 +1,56 @@
 {% extends "base.html" %}
-{% block title %}特定商取引法に基づく表記 — ことだま占い{% endblock %}
+
+{% block title %}特定商取引法に基づく表記 - ことだま占い{% endblock %}
+
 {% block content %}
 <div class="legal-container">
-  <h1>📋 特定商取引法に基づく表記</h1>
+  <h1>特定商取引法に基づく表記</h1>
 
-  <h2>サービス名</h2><p>ことだま占い</p>
-  <h2>運営者</h2><p>（運営者名を記入してください）</p>
-  <h2>所在地</h2><p>（都道府県のみ可：例 東京都）</p>
-  <h2>連絡先</h2><p>（メールアドレスを記入してください）</p>
-  <h2>サービス内容</h2><p>AIと統計データを組み合わせた姓名占いサービス（無料）</p>
-  <h2>料金</h2><p>無料（Google AdSenseによる広告収入で運営）</p>
-  <h2>動作環境</h2><p>インターネットに接続されたブラウザ</p>
+  <table class="legal-table">
+    <tr>
+      <th>サービス名</th>
+      <td>ことだま占い</td>
+    </tr>
+    <tr>
+      <th>運営者名</th>
+      <td>木花咲耶姫</td>
+    </tr>
+    <tr>
+      <th>所在地</th>
+      <td>請求があった場合、遅滞なく開示いたします。</td>
+    </tr>
+    <tr>
+      <th>連絡先</th>
+      <td>konohana3sakuyahime3@gmail.com</td>
+    </tr>
+    <tr>
+      <th>サービス内容</th>
+      <td>AIと統計データ等を組み合わせた姓名占いサービス</td>
+    </tr>
+    <tr>
+      <th>販売価格</th>
+      <td>無料</td>
+    </tr>
+    <tr>
+      <th>支払い方法</th>
+      <td>無料サービスのため、支払いは発生しません。</td>
+    </tr>
+    <tr>
+      <th>返品・キャンセルについて</th>
+      <td>無料サービスのため、返品・キャンセルは発生しません。</td>
+    </tr>
+    <tr>
+      <th>動作環境</th>
+      <td>インターネットに接続されたブラウザ</td>
+    </tr>
+    <tr>
+      <th>免責事項</th>
+      <td>本サービスの占い結果は娯楽・参考情報として提供するものであり、結果の正確性や効果を保証するものではありません。</td>
+    </tr>
+  </table>
 
-  <p><a href="{{ url_for('index') }}" style="color:#b06090">← トップへ戻る</a></p>
+  <p>
+    <a href="{{ url_for('index') }}" style="color:#b06090;">← トップへ戻る</a>
+  </p>
 </div>
 {% endblock %}
