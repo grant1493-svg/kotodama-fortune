@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,9 +17,10 @@
   <meta name="twitter:description" content="{{ og_description | default('AIとリアルデータが紡ぐ、今日のあなたへの言霊占い') }}">
   <meta name="twitter:image" content="{{ og_image_url | default('') }}">
   {% endblock %}
-  <!-- Google AdSense: paste your AdSense <script> tag here after approval -->
-  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
-</head>
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1165244338225367"
+    crossorigin="anonymous"></script>
+
 <body>
   {% block content %}{% endblock %}
 
@@ -32,4 +34,5 @@
 
   <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
+
 </html>
