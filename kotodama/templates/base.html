@@ -17,6 +17,14 @@
   <meta name="twitter:description" content="{{ og_description | default('AIとリアルデータが紡ぐ、今日のあなたへの言霊占い') }}">
   <meta name="twitter:image" content="{{ og_image_url | default('') }}">
   {% endblock %}
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XMQ7M4M5J1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XMQ7M4M5J1');
+  </script>
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1165244338225367"
     crossorigin="anonymous"></script>
@@ -26,13 +34,4 @@
 
   <!-- Cookie banner -->
   <div class="cookie-banner" id="cookieBanner" style="display:none">
-    <span>このサイトはGoogle AdSenseのCookieを使用します。
-      <a href="{{ url_for('privacy') }}" style="color:#b06090">詳細</a>
-    </span>
-    <button onclick="acceptCookies()">同意する</button>
-  </div>
-
-  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
-</body>
-
-</html>
+    <span>このサ
