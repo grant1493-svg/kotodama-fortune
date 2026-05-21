@@ -30,7 +30,23 @@ function Get-GitHistory {
         return @{ Error = "git コマンドが見つかりません: $_" }
     }
 }
-function Get-SummaryFiles { param([string]$dir) }
+function Get-SummaryFiles {
+    param([string]$dir)
+    $files = Get-ChildItem -Path $dir -File |
+        Where-Object {
+            ($_.Extension -eq '.html' -or $_.Extension -eq '.md') -and
+            $_.DirectoryName -eq $dir
+        } |
+        Sort-Object LastWriteTime -Descending
+    return @($files | ForEach-Object {
+        [ordered]@{
+            Name     = $_.Name
+            FullPath = $_.FullName
+            Date     = $_.LastWriteTime.ToString("yyyy-MM-dd")
+            IsHtml   = ($_.Extension -eq '.html')
+        }
+    })
+}
 function New-CommitHtml { param([hashtable]$commit) }
 function New-FileHtml { param([hashtable]$file) }
 function New-HistoryHtml { param([hashtable]$gitResult, [array]$files) }
