@@ -1,3 +1,3 @@
 @echo off
-cd /d C:\Users\admin\.local\bin
+cd /d "%~dp0"
 start cmd /k claude
