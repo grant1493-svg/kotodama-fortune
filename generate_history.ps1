@@ -61,7 +61,7 @@ function New-CommitHtml {
   </div>
   <div class="item-actions">
     <a href="$folderUrl" class="btn btn-folder">📁 フォルダを開く</a>
-    <a href="$claudeUrl" class="btn btn-claude" onclick="showClaudeNote()">🤖 Claudeで続きから</a>
+    <button class="btn btn-claude" onclick="copyAndLaunch()">🤖 Claudeで続きから</button>
   </div>
 </div>
 "@
@@ -83,7 +83,7 @@ function New-FileHtml {
   <div class="item-actions">
     $openBtn
     <a href="$folderUrl" class="btn btn-folder">📁 フォルダを開く</a>
-    <a href="$claudeUrl" class="btn btn-claude" onclick="showClaudeNote()">🤖 Claudeで続きから</a>
+    <button class="btn btn-claude" onclick="copyAndLaunch()">🤖 Claudeで続きから</button>
   </div>
 </div>
 "@
@@ -154,7 +154,7 @@ h2{font-size:1rem;color:#7ecbca;border-bottom:1px solid #333;padding-bottom:8px;
     <h3>📖 ボタンの使い方</h3>
     <div class="guide-row">📄 <b>内容を見る</b> ― 保存されたHTMLファイルをブラウザで表示します</div>
     <div class="guide-row">📁 <b>フォルダを開く</b> ― 作業フォルダをエクスプローラで開きます</div>
-    <div class="guide-row">🤖 <b>Claudeで続きから</b> ― Claude Codeを起動します（Edge の場合：画面下に表示される「ファイルを開く」をクリックしてください）</div>
+    <div class="guide-row">🤖 <b>Claudeで続きから</b> ― クリックするとコマンドがコピーされます。デスクトップの「Claudeを起動.bat」をダブルクリックするか、コマンドプロンプトに貼り付けてください</div>
     <div class="guide-refresh">🔄 <b>情報を最新にするには</b>：デスクトップの「履歴更新.bat」をダブルクリックしてください</div>
   </div>
 
@@ -166,15 +166,39 @@ h2{font-size:1rem;color:#7ecbca;border-bottom:1px solid #333;padding-bottom:8px;
 
 <div id="claude-note">
   <span class="close" onclick="document.getElementById('claude-note').style.display='none'">✕</span>
-  <b>🤖 Claude Codeの起動方法</b>
-  ブラウザの画面下部に「ファイルを開く」ボタンが表示されます。<br>それをクリックするとClaude Codeが起動します。<br><br>
-  表示されない場合は、デスクトップの<br>「履歴更新.bat」をダブルクリックしてください。
+  <b>🤖 Claudeで続きから — 手順</b>
+  <div id="cn-copied" style="display:none;color:#7eff9a;margin-bottom:8px">✅ コマンドをコピーしました！</div>
+  <div id="cn-manual" style="display:none;color:#ffb347;margin-bottom:8px">⚠ 手動でコピーしてください</div>
+  <b style="font-size:.8rem;color:#aaa">コマンド（貼り付け用）：</b>
+  <div id="cmd-box" style="background:#1a1a2e;border:1px solid #444;border-radius:4px;padding:6px 10px;margin:6px 0;font-family:monospace;font-size:.85rem;color:#7ecbca;user-select:all">claude</div>
+  <div style="font-size:.82rem;color:#ccc;line-height:1.7">
+    ① デスクトップの <b>「Claudeを起動.bat」</b> をダブルクリック<br>
+    　または<br>
+    ② コマンドプロンプト/PowerShell を開いて貼り付け・Enter
+  </div>
 </div>
 <script>
-function showClaudeNote(){
+function copyAndLaunch(){
   var n=document.getElementById('claude-note');
   n.style.display='block';
-  setTimeout(function(){n.style.display='none';},8000);
+  var el=document.createElement('textarea');
+  el.value='claude';
+  el.style.position='absolute';el.style.left='-9999px';
+  document.body.appendChild(el);
+  el.select();
+  try{
+    document.execCommand('copy');
+    document.getElementById('cn-copied').style.display='block';
+    document.getElementById('cn-manual').style.display='none';
+  }catch(e){
+    document.getElementById('cn-manual').style.display='block';
+    document.getElementById('cn-copied').style.display='none';
+  }
+  document.body.removeChild(el);
+  setTimeout(function(){n.style.display='none';
+    document.getElementById('cn-copied').style.display='none';
+    document.getElementById('cn-manual').style.display='none';
+  },12000);
 }
 </script>
 </body>
