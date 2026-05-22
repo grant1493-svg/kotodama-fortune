@@ -188,4 +188,9 @@ $summaryFiles = Get-SummaryFiles -dir $projectDir
 $html = New-HistoryHtml -gitResult $gitResult -files $summaryFiles
 [System.IO.File]::WriteAllText($outputFile, $html, [System.Text.Encoding]::UTF8)
 Write-Host "生成完了: $outputFile"
-Start-Process explorer $outputFile
+$edge = "${env:ProgramFiles(x86)}\Microsoft\Edge\Application\msedge.exe"
+if (Test-Path $edge) {
+    Start-Process $edge -ArgumentList "`"$outputFile`""
+} else {
+    Start-Process cmd -ArgumentList "/c", "start", '""', "`"$outputFile`""
+}
