@@ -5,6 +5,7 @@ $desktop      = [Environment]::GetFolderPath('Desktop')
 $outputFile   = Join-Path $desktop "history.html"
 $launchBat    = "$projectDir\launch_claude.bat"
 $maxCommits   = 20
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 function Get-GitHistory {
     param([string]$dir, [int]$count)
@@ -48,9 +49,9 @@ function Get-SummaryFiles {
     })
 }
 function New-CommitHtml {
-    param([hashtable]$commit)
-    $folderUrl  = "file:///$($projectDir.Replace('\','/'))"
-    $claudeUrl  = "file:///$($launchBat.Replace('\','/'))"
+    param($commit)
+    $folderUrl  = "file:///$($script:projectDir.Replace('\','/'))"
+    $claudeUrl  = "file:///$($script:launchBat.Replace('\','/'))"
     return @"
 <div class="item">
   <div class="item-info">
@@ -68,9 +69,9 @@ function New-CommitHtml {
 }
 
 function New-FileHtml {
-    param([hashtable]$file)
-    $folderUrl  = "file:///$($projectDir.Replace('\','/'))"
-    $claudeUrl  = "file:///$($launchBat.Replace('\','/'))"
+    param($file)
+    $folderUrl  = "file:///$($script:projectDir.Replace('\','/'))"
+    $claudeUrl  = "file:///$($script:launchBat.Replace('\','/'))"
     $fileUrl    = "file:///$($file.FullPath.Replace('\','/'))"
     $openBtn    = if ($file.IsHtml) { "<a href=`"$fileUrl`" target=`"_blank`" class=`"btn btn-open`">ブラウザで開く</a>" } else { "" }
     return @"
