@@ -1,4 +1,4 @@
-# generate_history.ps1
+﻿# generate_history.ps1
 
 $projectDir   = "C:\Users\admin\.local\bin"
 $desktop      = [Environment]::GetFolderPath('Desktop')
@@ -55,14 +55,13 @@ function New-CommitHtml {
     return @"
 <div class="item">
   <div class="item-info">
-    <span class="badge git">git</span>
+    <span class="badge git">作業ログ</span>
     <span class="date">$($commit.Date)</span>
-    <span class="hash">$($commit.Hash)</span>
-    <span class="message" title="$($commit.Message)">$($commit.Message)</span>
+    <span class="message" title="$($commit.Hash)">$($commit.Message)</span>
   </div>
   <div class="item-actions">
-    <a href="$folderUrl" class="btn btn-folder">フォルダを開く</a>
-    <a href="$claudeUrl" class="btn btn-claude">Claudeで続きから</a>
+    <a href="$folderUrl" class="btn btn-folder">📁 フォルダを開く</a>
+    <a href="$claudeUrl" class="btn btn-claude" onclick="showClaudeNote()">🤖 Claudeで続きから</a>
   </div>
 </div>
 "@
@@ -73,18 +72,18 @@ function New-FileHtml {
     $folderUrl  = "file:///$($script:projectDir.Replace('\','/'))"
     $claudeUrl  = "file:///$($script:launchBat.Replace('\','/'))"
     $fileUrl    = "file:///$($file.FullPath.Replace('\','/'))"
-    $openBtn    = if ($file.IsHtml) { "<a href=`"$fileUrl`" target=`"_blank`" class=`"btn btn-open`">ブラウザで開く</a>" } else { "" }
+    $openBtn    = if ($file.IsHtml) { "<a href=`"$fileUrl`" target=`"_blank`" class=`"btn btn-open`">📄 内容を見る</a>" } else { "" }
     return @"
 <div class="item">
   <div class="item-info">
-    <span class="badge log">&#x1F4AC;</span>
+    <span class="badge log">保存ファイル</span>
     <span class="date">$($file.Date)</span>
     <span class="message" title="$($file.Name)">$($file.Name)</span>
   </div>
   <div class="item-actions">
     $openBtn
-    <a href="$folderUrl" class="btn btn-folder">フォルダを開く</a>
-    <a href="$claudeUrl" class="btn btn-claude">Claudeで続きから</a>
+    <a href="$folderUrl" class="btn btn-folder">📁 フォルダを開く</a>
+    <a href="$claudeUrl" class="btn btn-claude" onclick="showClaudeNote()">🤖 Claudeで続きから</a>
   </div>
 </div>
 "@
@@ -96,13 +95,13 @@ function New-HistoryHtml {
     if ($gitResult.ContainsKey('Error')) {
         $gitRows = "<p class='empty'>$($gitResult.Error)</p>"
     } elseif ($gitResult.Commits.Count -eq 0) {
-        $gitRows = "<p class='empty'>コミット履歴はありません</p>"
+        $gitRows = "<p class='empty'>作業ログはありません</p>"
     } else {
         $gitRows = ($gitResult.Commits | ForEach-Object { New-CommitHtml -commit $_ }) -join "`n"
     }
 
     if ($files.Count -eq 0) {
-        $fileRows = "<p class='empty'>会話まとめファイルはありません</p>"
+        $fileRows = "<p class='empty'>保存済みファイルはありません</p>"
     } else {
         $fileRows = ($files | ForEach-Object { New-FileHtml -file $_ }) -join "`n"
     }
@@ -117,10 +116,15 @@ function New-HistoryHtml {
 <title>作業履歴ビューアー</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#1a1a2e;color:#e0e0e0;font-family:'Segoe UI',sans-serif;padding:24px}
+body{background:#1a1a2e;color:#e0e0e0;font-family:'Meiryo','Segoe UI',sans-serif;padding:24px}
 .container{max-width:1280px;margin:0 auto}
-h1{font-size:1.4rem;color:#a0c4ff;margin-bottom:4px}
-.updated{font-size:.8rem;color:#888;margin-bottom:24px}
+h1{font-size:1.5rem;color:#a0c4ff;margin-bottom:4px}
+.updated{font-size:.8rem;color:#888;margin-bottom:16px}
+.guide{background:#0f2040;border:1px solid #1a4a7a;border-radius:10px;padding:16px 20px;margin-bottom:24px}
+.guide h3{font-size:.95rem;color:#a0c4ff;margin-bottom:10px}
+.guide-row{font-size:.85rem;color:#ccc;padding:4px 0;line-height:1.6}
+.guide-row b{color:#e0e0e0}
+.guide-refresh{margin-top:10px;font-size:.85rem;color:#7ecbca;border-top:1px solid #1a4a7a;padding-top:10px}
 h2{font-size:1rem;color:#7ecbca;border-bottom:1px solid #333;padding-bottom:8px;margin:24px 0 12px}
 .item{display:flex;justify-content:space-between;align-items:center;background:#16213e;border:1px solid #0f3460;border-radius:8px;padding:12px 16px;margin-bottom:8px;gap:12px;flex-wrap:wrap}
 .item-info{display:flex;align-items:center;gap:10px;flex:1;min-width:0;flex-wrap:wrap}
@@ -128,26 +132,51 @@ h2{font-size:1rem;color:#7ecbca;border-bottom:1px solid #333;padding-bottom:8px;
 .badge.git{background:#0f3460;color:#a0c4ff}
 .badge.log{background:#1a3a2e;color:#7ecbca}
 .date{font-size:.8rem;color:#888;white-space:nowrap}
-.hash{font-size:.75rem;color:#666;font-family:monospace;white-space:nowrap}
-.message{font-size:.9rem;color:#ddd;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:500px}
+.message{font-size:.9rem;color:#ddd;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:600px}
 .item-actions{display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap}
-.btn{font-size:.8rem;padding:5px 12px;border-radius:6px;text-decoration:none;white-space:nowrap;transition:opacity .2s;cursor:pointer}
+.btn{font-size:.85rem;padding:6px 14px;border-radius:6px;text-decoration:none;white-space:nowrap;transition:opacity .2s;cursor:pointer;border:none}
 .btn:hover{opacity:.75}
 .btn-open{background:#1a5c8a;color:#fff}
 .btn-folder{background:#3d3d5c;color:#ccc}
 .btn-claude{background:#6b3fa0;color:#fff}
 .empty{color:#666;padding:8px 0}
+#claude-note{display:none;position:fixed;bottom:24px;right:24px;background:#2a1a4a;border:1px solid #6b3fa0;border-radius:10px;padding:16px 20px;max-width:320px;font-size:.85rem;line-height:1.7;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+#claude-note b{color:#c4a0ff;display:block;margin-bottom:6px}
+#claude-note .close{cursor:pointer;color:#888;float:right;font-size:1.1rem;margin-top:-2px}
 </style>
 </head>
 <body>
 <div class="container">
   <h1>&#x1F4CC; 作業履歴ビューアー</h1>
   <p class="updated">最終更新: $now</p>
-  <h2>&#x1F527; git コミット履歴（最新 $maxCommits 件）</h2>
+
+  <div class="guide">
+    <h3>📖 ボタンの使い方</h3>
+    <div class="guide-row">📄 <b>内容を見る</b> ― 保存されたHTMLファイルをブラウザで表示します</div>
+    <div class="guide-row">📁 <b>フォルダを開く</b> ― 作業フォルダをエクスプローラで開きます</div>
+    <div class="guide-row">🤖 <b>Claudeで続きから</b> ― Claude Codeを起動します（Edge の場合：画面下に表示される「ファイルを開く」をクリックしてください）</div>
+    <div class="guide-refresh">🔄 <b>情報を最新にするには</b>：デスクトップの「履歴更新.bat」をダブルクリックしてください</div>
+  </div>
+
+  <h2>📋 最近の作業ログ（直近 $maxCommits 件）</h2>
   $gitRows
-  <h2>&#x1F4AC; 会話まとめファイル</h2>
+  <h2>💾 保存済みファイル一覧</h2>
   $fileRows
 </div>
+
+<div id="claude-note">
+  <span class="close" onclick="document.getElementById('claude-note').style.display='none'">✕</span>
+  <b>🤖 Claude Codeの起動方法</b>
+  ブラウザの画面下部に「ファイルを開く」ボタンが表示されます。<br>それをクリックするとClaude Codeが起動します。<br><br>
+  表示されない場合は、デスクトップの<br>「履歴更新.bat」をダブルクリックしてください。
+</div>
+<script>
+function showClaudeNote(){
+  var n=document.getElementById('claude-note');
+  n.style.display='block';
+  setTimeout(function(){n.style.display='none';},8000);
+}
+</script>
 </body>
 </html>
 "@
