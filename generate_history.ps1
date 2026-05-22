@@ -188,4 +188,4 @@ $summaryFiles = Get-SummaryFiles -dir $projectDir
 $html = New-HistoryHtml -gitResult $gitResult -files $summaryFiles
 [System.IO.File]::WriteAllText($outputFile, $html, [System.Text.Encoding]::UTF8)
 Write-Host "生成完了: $outputFile"
-Start-Process $outputFile
+Start-Process explorer $outputFile
