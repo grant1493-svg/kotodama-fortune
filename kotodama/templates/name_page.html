@@ -1,5 +1,23 @@
 {% extends "base.html" %}
 {% block title %}「{{ name.kanji }}」の言霊占い — 名前に宿る意味と今日の運勢 | ことだま占い{% endblock %}
+{% block description %}「{{ name.kanji }}」（{{ name.mei }}）の言霊・漢字の意味・性格キーワードを解説。今日の運勢もAIが無料で占います。{% endblock %}
+{% block jsonld %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "「{{ name.kanji }}」の言霊占い — 名前に宿る意味と今日の運勢",
+  "description": "{{ og_description }}",
+  "url": "https://kotodama-fortune.onrender.com/name/{{ name.mei }}",
+  "inLanguage": "ja",
+  "publisher": {
+    "@type": "Organization",
+    "name": "ことだま占い",
+    "url": "https://kotodama-fortune.onrender.com"
+  }
+}
+</script>
+{% endblock %}
 {% block ogp %}
 <meta property="og:title" content="{{ og_title }}">
 <meta property="og:description" content="{{ og_description }}">
@@ -55,6 +73,8 @@
   <a href="{{ url_for('register') }}" style="text-decoration:none">
     <button class="btn-primary">✨ 今すぐ「{{ name.kanji }}」の言霊を占う →</button>
   </a>
+
+  <!-- AdSense (自動広告で表示) -->
 
   <!-- Related names -->
   <div class="card" style="margin-top:14px">

@@ -140,11 +140,73 @@ def fortune_image():
     return Response(png_bytes, mimetype="image/png")
 
 
+@app.route("/couple", methods=["GET", "POST"])
+def couple():
+    if request.method == "GET":
+        return render_template("couple.html")
+
+    name1 = request.form.get("name1", "").strip()
+    name2 = request.form.get("name2", "").strip()
+    if not name1 or not name2:
+        return render_template("couple.html", error="お二人の名前を入力してください")
+
+    import hashlib, anthropic as _anthropic
+    from stats_fetcher import get_today_stats as _gts
+    try:
+        stats = _gts("東京")
+    except Exception:
+        stats = {"date": "本日", "date_iso": "2000-01-01", "rokuyo": "大安", "weather": "晴れ"}
+
+    cache_key = "couple:" + hashlib.sha256(f"{name1}{name2}{stats['date_iso']}".encode()).hexdigest()
+    result = get_cached(cache_key)
+
+    if result is None:
+        try:
+            client = _anthropic.Anthropic()
+            msg = client.messages.create(
+                model="claude-haiku-4-5-20251001",
+                max_tokens=512,
+                system="""あなたは「ことだま相性占い師」です。2人の名前の言霊から相性を占います。
+必ず以下のJSON形式のみで返答してください。前後に説明文は不要です。
+{
+  "score": 1〜100の整数,
+  "label": "相性を一言で表すフレーズ（10字以内）",
+  "message": "2人へのメッセージ（80〜100字）",
+  "lucky_action": "2人が今日やると良いこと（30字以内）"
+}""",
+                messages=[{"role": "user", "content": f"名前1: {name1}\n名前2: {name2}\n今日の日付: {stats['date']}\n六曜: {stats['rokuyo']}"}],
+            )
+            import json as _json, re as _re
+            text = msg.content[0].text
+            cleaned = _re.sub(r"^```(?:json)?\s*|\s*```$", "", text.strip(), flags=_re.MULTILINE)
+            result = _json.loads(cleaned)
+            set_cached(cache_key, result)
+        except Exception:
+            result = {
+                "score": 75,
+                "label": "心が通じ合う縁",
+                "message": f"「{name1}」と「{name2}」、2人の言霊はとても良い響き合いをしています。お互いを大切にすることで、さらに素敵な関係になれるでしょう🌸",
+                "lucky_action": "一緒にお茶を飲む",
+            }
+
+    share_text = f"「{name1}」×「{name2}」の言霊相性は{result['score']}点！{result['label']} #ことだま占い"
+    return render_template("couple.html", name1=name1, name2=name2, result=result, share_text=share_text)
+
+
+@app.route("/robots.txt")
+def robots():
+    base_url = request.url_root.rstrip("/")
+    content = f"User-agent: *\nAllow: /\nSitemap: {base_url}/sitemap.xml\n"
+    return Response(content, mimetype="text/plain")
+
+
 @app.route("/sitemap.xml")
 def sitemap():
+    import datetime
     from popular_names import POPULAR_NAMES
     base_url = request.url_root.rstrip("/")
-    xml = render_template("sitemap.xml", base_url=base_url, names=POPULAR_NAMES)
+    today = datetime.date.today().isoformat()
+    xml = render_template("sitemap.xml", base_url=base_url, names=POPULAR_NAMES, today=today)
     return Response(xml, mimetype="application/xml")
 
 

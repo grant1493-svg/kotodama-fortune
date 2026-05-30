@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}言霊相性占い — 2人の名前の相性をAIが占う | ことだま占い{% endblock %}
+{% block description %}2人の名前の言霊をAIが読み解き、相性スコアとメッセージをお届け。カップル・友人・家族の相性を無料で占えます。{% endblock %}
+{% block content %}
+<div class="container">
+
+  <div class="app-header">
+    <div class="app-logo">💕</div>
+    <div class="app-name">言霊相性占い</div>
+    <div class="app-tagline">2人の名前の言霊が紡ぐ、運命の相性</div>
+  </div>
+
+  <form method="post" action="{{ url_for('couple') }}" id="coupleForm">
+    <div class="card">
+      {% if error %}
+      <p style="color:#e53935;font-size:13px;margin-bottom:10px">{{ error }}</p>
+      {% endif %}
+      <div class="field-label">🌸 1人目の名前（漢字・ひらがな）</div>
+      <input class="cute-input" type="text" name="name1" placeholder="例：田中花" value="{{ name1 or '' }}" required>
+      <div class="field-label">🌟 2人目の名前（漢字・ひらがな）</div>
+      <input class="cute-input" type="text" name="name2" placeholder="例：鈴木翔太" value="{{ name2 or '' }}" required>
+      <button type="submit" class="btn-primary" style="margin-top:16px">💕 相性を占う</button>
+    </div>
+  </form>
+
+  {% if result %}
+  <!-- 結果カード -->
+  <div class="card" style="text-align:center;margin-top:16px">
+    <div style="font-size:13px;color:#b06090;font-weight:bold;margin-bottom:8px">💕 言霊相性スコア</div>
+    <div style="font-size:13px;color:#888;margin-bottom:6px">「{{ name1 }}」×「{{ name2 }}」</div>
+    <!-- スコアメーター -->
+    <div style="position:relative;height:140px;display:flex;align-items:center;justify-content:center;margin:10px 0">
+      <svg viewBox="0 0 200 110" width="200" height="110">
+        <!-- 背景弧 -->
+        <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#f8e1ee" stroke-width="18" stroke-linecap="round"/>
+        <!-- スコア弧 -->
+        {% set angle = (result.score / 100) %}
+        {% set cx = 100 %}{% set cy = 100 %}{% set r = 80 %}
+        {% set end_x = (cx + r * (angle * 3.14159 | cos)) | round(2) %}
+        <path d="M 20 100 A 80 80 0 {{ '1' if result.score > 50 else '0' }} 1 {{ (100 + 80 * (1 - result.score/100 * 2) | abs * (1 if result.score > 50 else -1)) | round }} 100"
+              fill="none" stroke="url(#grad)" stroke-width="18" stroke-linecap="round"/>
+        <defs>
+          <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#f48fb1"/>
+            <stop offset="100%" style="stop-color:#ce93d8"/>
+          </linearGradient>
+        </defs>
+        <!-- スコア数字 -->
+        <text x="100" y="90" text-anchor="middle" font-size="38" font-weight="bold" fill="#c2185b">{{ result.score }}</text>
+        <text x="100" y="107" text-anchor="middle" font-size="12" fill="#aaa">/ 100</text>
+      </svg>
+    </div>
+    <div style="font-size:18px;font-weight:bold;color:#c2185b;margin:8px 0">{{ result.label }}</div>
+    <p style="font-size:14px;color:#555;line-height:1.8;margin:10px 0">{{ result.message }}</p>
+    <div style="background:#fff8fb;border-radius:12px;padding:10px 14px;margin-top:10px;font-size:13px;color:#b06090">
+      💑 今日のラッキーアクション：{{ result.lucky_action }}
+    </div>
+  </div>
+
+  <!-- シェアボタン -->
+  <div class="share-row" style="margin-top:14px">
+    <button class="btn-share btn-share-x" id="shareXCouple">𝕏 シェア</button>
+    <button class="btn-share btn-share-line" id="shareLineCouple">LINE シェア</button>
+  </div>
+  <p class="share-sub">友達・パートナーと一緒にやってみて🔮</p>
+
+  <script>
+  (function(){
+    var text = {{ share_text | tojson }};
+    var url = location.href;
+    document.getElementById('shareXCouple').addEventListener('click', function(){
+      window.open('https://x.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(url), '_blank');
+    });
+    document.getElementById('shareLineCouple').addEventListener('click', function(){
+      window.open('https://line.me/R/msg/text/?' + encodeURIComponent(text + '\n' + url), '_blank');
+    });
+  })();
+  </script>
+  {% endif %}
+
+  <!-- コンテンツ -->
+  {% if not result %}
+  <div style="max-width:480px;margin:1.5rem auto;padding:0 1rem;color:#555;line-height:1.8;font-size:14px">
+    <h2 style="color:#b06090;font-size:1.1rem;margin-top:1.5rem">💕 言霊相性占いとは？</h2>
+    <p>2人の名前に宿る「言霊（ことだま）」をAIが読み解き、相性スコアとメッセージをお届けします。カップル・親友・家族・気になるあの人との相性を試してみてください。</p>
+    <h2 style="color:#b06090;font-size:1.1rem;margin-top:1.5rem">✨ 特徴</h2>
+    <p>名前の音韻・漢字の持つエネルギー・今日の暦データを組み合わせた、毎日変わる相性診断です。同じ2人でも日によって異なる視点からメッセージが届きます。</p>
+  </div>
+  {% endif %}
+
+  <div style="text-align:center;margin:20px 0">
+    <a href="{{ url_for('register') }}" style="text-decoration:none">
+      <button class="btn-primary" style="background:linear-gradient(135deg,#f06292,#ce93d8)">🔮 自分の言霊を占う →</button>
+    </a>
+  </div>
+
+  <div class="footer">
+    <div>
+      <a href="{{ url_for('privacy') }}">プライバシーポリシー</a>
+      <a href="{{ url_for('disclaimer') }}">免責事項</a>
+    </div>
+    <div style="margin-top:8px">© 2026 ことだま占い — AIによる娯楽コンテンツです</div>
+  </div>
+</div>
+{% endblock %}

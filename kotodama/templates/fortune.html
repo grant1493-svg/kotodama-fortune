@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ sei }}{{ mei }}さんの今日の占い — ことだま占い{% endblock %}
+{% block description %}{{ fortune.kotodama_analysis[:80] }} | ことだま占い{% endblock %}
 {% block content %}
 <div class="container">
 
@@ -26,11 +27,7 @@
     <span class="countdown-time" id="countdownTime">--:--:--</span>
   </div>
 
-  <!-- AdSense top slot -->
-  <div class="ad-slot">
-    <!-- ins class="adsbygoogle" ... -->
-    広告
-  </div>
+  <!-- AdSense top slot (自動広告で表示 / 手動スロットID取得後に差し替え) -->
 
   <!-- Morning banner -->
   <div class="morning-banner" id="morningBanner">
@@ -81,11 +78,7 @@
     {{ fortune.today_message }}
   </div>
 
-  <!-- AdSense mid slot -->
-  <div class="ad-slot">
-    <!-- ins class="adsbygoogle" ... -->
-    広告
-  </div>
+  <!-- AdSense mid slot (自動広告で表示 / 手動スロットID取得後に差し替え) -->
 
   <!-- Lucky -->
   <div class="lucky-strip">
@@ -116,6 +109,7 @@
       <a href="{{ url_for('disclaimer') }}">免責事項</a>
     </div>
     <a href="{{ url_for('reset') }}" class="reset-link">名前を変更する</a>
+    <a href="{{ url_for('couple') }}" class="reset-link" style="color:#ce93d8">💕 相性占いを試す</a>
     <div style="margin-top:8px">© 2026 ことだま占い — AIによる娯楽コンテンツです</div>
   </div>
 </div>

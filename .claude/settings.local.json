@@ -6,7 +6,14 @@
       "Bash(git add *)",
       "Bash(git commit *)",
       "Bash(python3)",
-      "Bash(unset ANTHROPIC_API_KEY)"
+      "Bash(unset ANTHROPIC_API_KEY)",
+      "Bash(git push *)",
+      "Bash(git checkout *)",
+      "Bash(git merge *)",
+      "Bash(git pull *)",
+      "Bash(git *)",
+      "PowerShell(powershell -ExecutionPolicy Bypass -Command \". 'C:\\\\Users\\\\admin\\\\.local\\\\bin\\\\generate_history.ps1'; Write-Host 'OK'\")",
+      "PowerShell(. 'C:\\\\Users\\\\admin\\\\.local\\\\bin\\\\generate_history.ps1'; Write-Host 'OK')"
     ]
   }
 }

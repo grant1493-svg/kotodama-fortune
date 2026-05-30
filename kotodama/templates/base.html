@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}ことだま占い{% endblock %}</title>
-  <meta name="description" content="AIとリアルデータが紡ぐ、今日のあなたへの言霊占い">
+  <meta name="description" content="{% block description %}AIとリアルデータが紡ぐ、今日のあなたへの言霊占い{% endblock %}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   {% block ogp %}
   <meta property="og:title" content="{{ og_title | default('ことだま占い') }}">
@@ -16,6 +16,24 @@
   <meta name="twitter:title" content="{{ og_title | default('ことだま占い') }}">
   <meta name="twitter:description" content="{{ og_description | default('AIとリアルデータが紡ぐ、今日のあなたへの言霊占い') }}">
   <meta name="twitter:image" content="{{ og_image_url | default('') }}">
+  {% endblock %}
+  {% block jsonld %}
+  <!-- JSON-LD 構造化データ (WebSite) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "ことだま占い",
+    "url": "https://kotodama-fortune.onrender.com",
+    "description": "名前の言霊と今日のリアルデータをもとにAIが生成する、毎日変わるオリジナル占い",
+    "inLanguage": "ja",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://kotodama-fortune.onrender.com/name/{search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
   {% endblock %}
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XMQ7M4M5J1"></script>
@@ -28,10 +46,20 @@
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1165244338225367"
     crossorigin="anonymous"></script>
+</head>
 
 <body>
   {% block content %}{% endblock %}
 
   <!-- Cookie banner -->
   <div class="cookie-banner" id="cookieBanner" style="display:none">
-    <span>このサ
+    <span>このサイトはGoogle AdSenseのCookieを使用します。
+      <a href="{{ url_for('privacy') }}" style="color:#b06090">詳細</a>
+    </span>
+    <button onclick="acceptCookies()">同意する</button>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+
+</html>
