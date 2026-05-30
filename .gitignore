@@ -6,3 +6,5 @@ claude.exe
 
 # 生成物
 history.html
+
+*.env
