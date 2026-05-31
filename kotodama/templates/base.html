@@ -10,12 +10,12 @@
   {% block ogp %}
   <meta property="og:title" content="{{ og_title | default('ことだま占い') }}">
   <meta property="og:description" content="{{ og_description | default('AIとリアルデータが紡ぐ、今日のあなたへの言霊占い') }}">
-  <meta property="og:image" content="{{ og_image_url | default('') }}">
+  <meta property="og:image" content="{{ og_image_url | default('https://kotodama-fortune.onrender.com/static/ogp.png') }}">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{{ og_title | default('ことだま占い') }}">
   <meta name="twitter:description" content="{{ og_description | default('AIとリアルデータが紡ぐ、今日のあなたへの言霊占い') }}">
-  <meta name="twitter:image" content="{{ og_image_url | default('') }}">
+  <meta name="twitter:image" content="{{ og_image_url | default('https://kotodama-fortune.onrender.com/static/ogp.png') }}">
   {% endblock %}
   {% block jsonld %}
   <!-- JSON-LD 構造化データ (WebSite) -->
