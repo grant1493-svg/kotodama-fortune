@@ -88,6 +88,33 @@
     <span>🔢 {{ fortune.lucky.number }}</span>
   </div>
 
+  <!-- Amazon アフィリエイト（運勢連動） -->
+  <div style="background:linear-gradient(135deg,#fff9fb,#fce4ec);border-radius:12px;padding:14px;margin:14px 0;">
+    <div style="font-size:13px;font-weight:bold;color:#c2185b;margin-bottom:4px;">🛍️ 今日の運勢を高める開運グッズ</div>
+    <div style="font-size:11px;color:#999;margin-bottom:12px;">ラッキーカラー「{{ fortune.lucky.color }}」に合わせたアイテムを</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <a href="https://www.amazon.co.jp/s?k=パワーストーン+{{ fortune.lucky.color }}&tag=grantcar-22" target="_blank" rel="noopener"
+         style="display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #f8bbd0;border-radius:10px;padding:9px 12px;text-decoration:none;color:#333;">
+        <span style="font-size:20px;">💎</span>
+        <div style="flex:1">
+          <div style="font-weight:bold;font-size:12px;color:#c2185b;">{{ fortune.lucky.color }}系パワーストーン</div>
+          <div style="font-size:11px;color:#999;">言霊の力をさらに増幅させる</div>
+        </div>
+        <span style="font-size:11px;color:#e91e63;font-weight:bold;">Amazon ›</span>
+      </a>
+      <a href="https://www.amazon.co.jp/s?k=開運+姓名判断+本&tag=grantcar-22" target="_blank" rel="noopener"
+         style="display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #f8bbd0;border-radius:10px;padding:9px 12px;text-decoration:none;color:#333;">
+        <span style="font-size:20px;">📖</span>
+        <div style="flex:1">
+          <div style="font-weight:bold;font-size:12px;color:#c2185b;">姓名判断・言霊の本</div>
+          <div style="font-size:11px;color:#999;">名前に宿る使命をもっと深く知る</div>
+        </div>
+        <span style="font-size:11px;color:#e91e63;font-weight:bold;">Amazon ›</span>
+      </a>
+    </div>
+    <p style="font-size:10px;color:#ccc;margin:8px 0 0;text-align:right;">※ Amazonアソシエイト・プログラム参加</p>
+  </div>
+
   <!-- Share -->
   <div class="share-row">
     <button class="btn-share btn-share-x" id="shareX">𝕏 シェア</button>
@@ -101,14 +128,17 @@
   </a>
   <p class="share-sub">友達と一緒に占うと相性が分かるかも🔮</p>
 
-  <!-- LINE友だち追加 -->
-  <div style="text-align:center;margin:16px 0">
-    <a href="https://line.me/R/ti/p/@133soovp" target="_blank" style="text-decoration:none">
-      <div style="background:#06C755;color:white;border-radius:8px;padding:12px;font-size:15px;font-weight:bold;display:flex;align-items:center;justify-content:center;gap:8px">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.03 2 11c0 3.19 1.72 6.01 4.37 7.73-.19.7-.72 2.55-.82 2.95-.13.5.18.5.38.36.15-.1 2.44-1.62 3.42-2.27.72.1 1.47.16 2.23.16 5.52 0 10-4.03 10-9S17.52 2 12 2z"/></svg>
-        LINE で毎朝占いを受け取る
+  <!-- LINE友だち追加（強化版） -->
+  <div style="border:2px solid #06C755;border-radius:12px;padding:16px;margin:16px 0;text-align:center;">
+    <div style="font-size:13px;color:#555;margin-bottom:8px;">🌸 明日も言霊メッセージを受け取りたい方へ</div>
+    <div style="font-size:12px;color:#888;margin-bottom:12px;">毎朝あなただけの言霊占いをLINEでお届け。無料・解除もワンタップ。</div>
+    <a href="https://line.me/R/ti/p/@133soovp" target="_blank" style="text-decoration:none;display:block">
+      <div style="background:#06C755;color:white;border-radius:10px;padding:14px;font-size:15px;font-weight:bold;display:flex;align-items:center;justify-content:center;gap:10px;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.03 2 11c0 3.19 1.72 6.01 4.37 7.73-.19.7-.72 2.55-.82 2.95-.13.5.18.5.38.36.15-.1 2.44-1.62 3.42-2.27.72.1 1.47.16 2.23.16 5.52 0 10-4.03 10-9S17.52 2 12 2z"/></svg>
+        LINE 友だち追加（無料）
       </div>
     </a>
+    <div style="font-size:11px;color:#aaa;margin-top:8px;">登録後すぐに毎朝配信スタート ✨</div>
   </div>
 
   <!-- Footer -->
