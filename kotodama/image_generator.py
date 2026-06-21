@@ -101,7 +101,7 @@ def generate_fortune_image(sei: str, mei: str, stats: dict, fortune: dict) -> by
     draw.text((60, 415), lucky_text, font=f_sm, fill=_PURPLE)
 
     # URL
-    draw.text((1140, 592), "kotodama-fortune.com", font=f_xs, fill=_DIMGRAY, anchor="ra")
+    draw.text((1140, 592), "kotodama-uranai.com", font=f_xs, fill=_DIMGRAY, anchor="ra")
 
     buf = io.BytesIO()
     img.save(buf, format="PNG", optimize=True)

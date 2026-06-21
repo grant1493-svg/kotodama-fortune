@@ -10,12 +10,12 @@
   {% block ogp %}
   <meta property="og:title" content="{{ og_title | default('ことだま占い') }}">
   <meta property="og:description" content="{{ og_description | default('AIとリアルデータが紡ぐ、今日のあなたへの言霊占い') }}">
-  <meta property="og:image" content="{{ og_image_url | default('https://kotodama-fortune.onrender.com/static/ogp.png') }}">
+  <meta property="og:image" content="{{ og_image_url | default('https://www.kotodama-uranai.com/static/ogp.png') }}">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{{ og_title | default('ことだま占い') }}">
   <meta name="twitter:description" content="{{ og_description | default('AIとリアルデータが紡ぐ、今日のあなたへの言霊占い') }}">
-  <meta name="twitter:image" content="{{ og_image_url | default('https://kotodama-fortune.onrender.com/static/ogp.png') }}">
+  <meta name="twitter:image" content="{{ og_image_url | default('https://www.kotodama-uranai.com/static/ogp.png') }}">
   {% endblock %}
   {% block jsonld %}
   <!-- JSON-LD 構造化データ (WebSite) -->
@@ -24,12 +24,12 @@
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "ことだま占い",
-    "url": "https://kotodama-fortune.onrender.com",
+    "url": "https://www.kotodama-uranai.com",
     "description": "名前の言霊と今日のリアルデータをもとにAIが生成する、毎日変わるオリジナル占い",
     "inLanguage": "ja",
     "potentialAction": {
       "@type": "SearchAction",
-      "target": "https://kotodama-fortune.onrender.com/name/{search_term_string}",
+      "target": "https://www.kotodama-uranai.com/name/{search_term_string}",
       "query-input": "required name=search_term_string"
     }
   }
