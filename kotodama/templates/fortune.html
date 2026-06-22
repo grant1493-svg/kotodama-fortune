@@ -151,42 +151,4 @@
   </div>
   <a href="{{ url_for('fortune_image') }}" download="kotodama-fortune.png"
      style="text-decoration:none;display:block;margin-bottom:8px">
-    <button class="btn-share" style="width:100%;background:linear-gradient(135deg,#7b1fa2,#1565c0);color:white">
-      📸 画像を保存する（インスタ・X用）
-    </button>
-  </a>
-  <p class="share-sub">友達と一緒に占うと相性が分かるかも🔮</p>
-
-  <!-- LINE友だち追加（強化版） -->
-  <div style="border:2px solid #06C755;border-radius:12px;padding:16px;margin:16px 0;text-align:center;">
-    <div style="font-size:13px;color:#555;margin-bottom:8px;">🌸 明日も言霊メッセージを受け取りたい方へ</div>
-    <div style="font-size:12px;color:#888;margin-bottom:12px;">毎朝あなただけの言霊占いをLINEでお届け。無料・解除もワンタップ。</div>
-    <a href="https://line.me/R/ti/p/@133soovp" target="_blank" style="text-decoration:none;display:block">
-      <div style="background:#06C755;color:white;border-radius:10px;padding:14px;font-size:15px;font-weight:bold;display:flex;align-items:center;justify-content:center;gap:10px;">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.03 2 11c0 3.19 1.72 6.01 4.37 7.73-.19.7-.72 2.55-.82 2.95-.13.5.18.5.38.36.15-.1 2.44-1.62 3.42-2.27.72.1 1.47.16 2.23.16 5.52 0 10-4.03 10-9S17.52 2 12 2z"/></svg>
-        LINE 友だち追加（無料）
-      </div>
-    </a>
-    <div style="font-size:11px;color:#aaa;margin-top:8px;">登録後すぐに毎朝配信スタート ✨</div>
-  </div>
-
-  <!-- Footer -->
-  <div class="footer">
-    <div>
-      <a href="{{ url_for('privacy') }}">プライバシーポリシー</a>
-      <a href="{{ url_for('tokushoho') }}">特定商取引法</a>
-      <a href="{{ url_for('disclaimer') }}">免責事項</a>
-    </div>
-    <a href="{{ url_for('reset') }}" class="reset-link">名前を変更する</a>
-    <a href="{{ url_for('couple') }}" class="reset-link" style="color:#ce93d8">💕 相性占いを試す</a>
-    <div style="margin-top:8px">© 2026 ことだま占い — AIによる娯楽コンテンツです</div>
-  </div>
-</div>
-
-<script>
-  var FORTUNE_SEI = {{ sei | tojson }};
-  var FORTUNE_MEI = {{ mei | tojson }};
-  var FORTUNE_MESSAGE = {{ fortune.today_message | tojson }};
-  var FORTUNE_SCORES = {{ fortune.scores | tojson }};
-</script>
-{% endblock %}
+    <button class="btn-share" style="
