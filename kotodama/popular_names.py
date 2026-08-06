@@ -266,6 +266,12 @@ POPULAR_NAMES: list[dict] = [
     {"mei": "よしえ", "kanji": "良枝"},
     {"mei": "すみこ", "kanji": "澄子"},
     {"mei": "みつこ", "kanji": "光子"},
+    # 追加：2025年生まれ名前ランキング上位（明治安田生命調べ）より
+    {"mei": "すい", "kanji": "翠"},
+    {"mei": "つむぎ", "kanji": "紬"},
+    {"mei": "ましろ", "kanji": "茉白"},
+    {"mei": "うた", "kanji": "詩"},
+    {"mei": "ゆいな", "kanji": "結菜"},
     # ── 男性名 ──────────────────────────────────────────────────
     {"mei": "はると", "kanji": "陽翔"},
     {"mei": "ゆうと", "kanji": "勇人"},
@@ -464,37 +470,9 @@ POPULAR_NAMES: list[dict] = [
     {"mei": "そうへい", "kanji": "蒼平"},
     {"mei": "たいし", "kanji": "大志"},
     {"mei": "まさし", "kanji": "雅志"},
-]
-
-_NAME_INDEX: dict[str, dict] = {e["mei"]: e for e in POPULAR_NAMES}
-
-
-def get_name_entry(mei: str) -> dict | None:
-    """Return name entry by mei (reading), or None if not found."""
-    return _NAME_INDEX.get(mei)
-
-
-def get_related_names(mei: str, count: int = 6) -> list[dict]:
-    """Return count other names, excluding the given mei.
-    Uses a deterministic hash-based selection so the same page always
-    shows the same related names (good for SEO / internal linking).
-    """
-    import hashlib
-    others = [e for e in POPULAR_NAMES if e["mei"] != mei]
-    seed = int(hashlib.md5(mei.encode()).hexdigest(), 16)
-    step = max(1, len(others) // count)
-    offset = seed % step
-    return [others[(offset + i * step) % len(others)] for i in range(count)]
-"kanji": "白斗"},
-    {"mei": "あおき", "kanji": "蒼希"},
-    {"mei": "ゆうせい", "kanji": "勇星"},
-    {"mei": "こうき", "kanji": "光希"},
-    {"mei": "そうへい", "kanji": "蒼平"},
-    {"mei": "ゆうき", "kanji": "悠希"},
-    {"mei": "たいし", "kanji": "大志"},
-    {"mei": "まさし", "kanji": "雅志"},
-    {"mei": "ひろし", "kanji": "弘志"},
-    {"mei": "としし", "kanji": "俊志"},
+    # 追加：2025年生まれ名前ランキング上位（明治安田生命調べ）より
+    {"mei": "みなと", "kanji": "湊"},
+    {"mei": "さく", "kanji": "朔"},
 ]
 
 _NAME_INDEX: dict[str, dict] = {e["mei"]: e for e in POPULAR_NAMES}

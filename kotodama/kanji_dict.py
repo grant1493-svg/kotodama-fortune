@@ -50,6 +50,14 @@ KANJI: dict[str, dict] = {
     "楓": {"strokes": 13, "meanings": ["変化", "美しさ", "季節"], "personality": ["変化対応", "美的感覚"]},
     "朱": {"strokes": 6,  "meanings": ["情熱", "生命力", "赤"],   "personality": ["情熱的", "行動力"]},
     "悠": {"strokes": 11, "meanings": ["ゆったり", "永遠", "深さ"],"personality": ["ゆとり", "深い思考"]},
+    # 追加：2025年生まれ名前ランキング上位の名前に対応
+    "湊": {"strokes": 12, "meanings": ["港", "人が集う", "安らぎ"], "personality": ["包容力", "求心力"]},
+    "朔": {"strokes": 10, "meanings": ["新月", "始まり", "再生"],   "personality": ["新しい挑戦", "始まりの力"]},
+    "翠": {"strokes": 14, "meanings": ["深緑", "宝石", "気品"],     "personality": ["気品", "清らかさ"]},
+    "紬": {"strokes": 11, "meanings": ["織物", "丈夫", "温かみ"],   "personality": ["粘り強さ", "温かさ"]},
+    "茉": {"strokes": 8,  "meanings": ["ジャスミン", "香り", "清楚"],"personality": ["清楚さ", "上品"]},
+    "白": {"strokes": 5,  "meanings": ["純粋", "潔白", "始まり"],   "personality": ["誠実さ", "潔さ"]},
+    "詩": {"strokes": 13, "meanings": ["詩情", "表現", "美しい言葉"],"personality": ["表現力", "豊かな感性"]},
 }
 
 
