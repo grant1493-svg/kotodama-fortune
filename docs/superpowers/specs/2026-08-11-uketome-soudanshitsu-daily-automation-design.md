@@ -219,6 +219,38 @@
 
 ---
 
+## 運用中の設定変更・一時停止
+
+無人で毎日走り続ける仕組みである以上、「いつでも軌道修正できる」ことを構造として保証する。
+
+### いつでも編集できるもの
+
+しきい値・ジャンル一覧・切り口ルールなど、挙動を左右するパラメータはすべてJSONファイル（`judgment_policy.json`, `genre_candidates.json`, `articles_config.py` 等）に集約している。コード変更は不要で、会話で「◯◯を△△に変えて」と伝えるだけで該当ファイルを編集すればよい。編集内容は**次回の日次実行から自動的に反映**される（再起動やデプロイの手順は不要）。
+
+### 緊急停止スイッチ
+
+`routine_control.json` を新設し、オーケストレーターは実行冒頭で必ずこれを読む。
+
+```json
+{ "enabled": true, "note": "" }
+```
+
+- `enabled: false` の間は、オーケストレーターは何もせず「停止中」とだけPush通知して終了する（ジャンル選定や投稿は一切走らない）
+- 「今日だけ止めて」「しばらく止めて」等、会話で依頼されたらこのファイルを書き換えるだけで即座に反映される
+- `note` に停止理由を書いておけば、再開時に経緯を思い出せる
+
+### 変更の粒度
+
+| 変更したい内容 | 編集するファイル | 反映タイミング |
+|---|---|---|
+| 特化判定のしきい値 | `judgment_policy.json` | 次回実行時 |
+| ジャンルの追加/引退 | `genre_candidates.json` | 次回実行時 |
+| 投稿時刻 | `/schedule` の設定 | 次回実行時 |
+| 一時停止/再開 | `routine_control.json` | 次回実行時（即時） |
+| ロゴ/キャッチコピー | `static/logo_overlay.png`（`generate_logo_overlay.py`で再生成） | 次回実行時 |
+
+---
+
 ## 通知
 
 毎日の実行後（成功/スキップいずれも）、Push通知（Claude Codeのプッシュ機能）で以下を要約:
@@ -243,6 +275,7 @@ uketome-soudanshitsu/
   ├─ qa_feedback_log.json        # 新規: NG理由の蓄積
   ├─ genre_candidates.json       # 新規: 新ジャンル候補
   ├─ judgment_policy.json        # 新規: 特化判定パラメータ+自己調整履歴
+  ├─ routine_control.json        # 新規: 一時停止スイッチ
   ├─ articles/                   # 新規: 生成記事本文の保存先
   └─ static/
        └─ logo_overlay.png       # 新規: ロゴ/キャッチコピー透過PNG
