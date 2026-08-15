@@ -1,0 +1,11 @@
+{
+  "min_articles_before_check": 20,
+  "min_days_before_check": 30,
+  "specialization_ratio_threshold": 1.5,
+  "min_data_points": 3,
+  "bounds": {
+    "ratio_threshold": [1.2, 2.0],
+    "min_articles": [10, 40]
+  },
+  "review_history": []
+}

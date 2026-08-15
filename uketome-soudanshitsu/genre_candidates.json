@@ -1,0 +1,7 @@
+[
+  { "key": "love", "name": "恋愛の悩み", "status": "active", "discovered_date": "2026-08-09" },
+  { "key": "work", "name": "仕事の悩み", "status": "active", "discovered_date": "2026-08-09" },
+  { "key": "relationship", "name": "人間関係の悩み", "status": "active", "discovered_date": "2026-08-09" },
+  { "key": "money", "name": "お金の悩み", "status": "active", "discovered_date": "2026-08-09" },
+  { "key": "selfesteem", "name": "自己肯定感の悩み", "status": "active", "discovered_date": "2026-08-09" }
+]
