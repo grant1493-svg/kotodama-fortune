@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 .superpowers/
 claude.exe
+.worktrees/
 
 # 生成物
 history.html
