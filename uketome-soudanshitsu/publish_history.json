@@ -1,7 +1,63 @@
 [
-  { "date": "2026-08-09", "status": "published", "genre": "love", "angle": "初回投稿(既存記事)", "note_url": "https://note.com/soudan_labo/n/ned76d2659fb1", "like_count": null, "like_count_checked_at": null, "qa_retry_count": 0 },
-  { "date": "2026-08-09", "status": "published", "genre": "work", "angle": "初回投稿(既存記事)", "note_url": "https://note.com/soudan_labo/n/n0d0899ffd973", "like_count": null, "like_count_checked_at": null, "qa_retry_count": 0 },
-  { "date": "2026-08-09", "status": "published", "genre": "relationship", "angle": "初回投稿(既存記事)", "note_url": "https://note.com/soudan_labo/n/n8c8fcc6b9de5", "like_count": null, "like_count_checked_at": null, "qa_retry_count": 0 },
-  { "date": "2026-08-09", "status": "published", "genre": "money", "angle": "初回投稿(既存記事)", "note_url": "https://note.com/soudan_labo/n/n787ebd1723a3", "like_count": null, "like_count_checked_at": null, "qa_retry_count": 0 },
-  { "date": "2026-08-09", "status": "published", "genre": "selfesteem", "angle": "初回投稿(既存記事)", "note_url": "https://note.com/soudan_labo/n/n51cd8a6629bc", "like_count": null, "like_count_checked_at": null, "qa_retry_count": 0 }
+  {
+    "date": "2026-08-09",
+    "status": "published",
+    "genre": "love",
+    "angle": "初回投稿(既存記事)",
+    "note_url": "https://note.com/soudan_labo/n/ned76d2659fb1",
+    "like_count": 1,
+    "like_count_checked_at": "2026-08-17T11:10:39.899724+00:00",
+    "qa_retry_count": 0
+  },
+  {
+    "date": "2026-08-09",
+    "status": "published",
+    "genre": "work",
+    "angle": "初回投稿(既存記事)",
+    "note_url": "https://note.com/soudan_labo/n/n0d0899ffd973",
+    "like_count": 1,
+    "like_count_checked_at": "2026-08-17T11:10:39.899724+00:00",
+    "qa_retry_count": 0
+  },
+  {
+    "date": "2026-08-09",
+    "status": "published",
+    "genre": "relationship",
+    "angle": "初回投稿(既存記事)",
+    "note_url": "https://note.com/soudan_labo/n/n8c8fcc6b9de5",
+    "like_count": 1,
+    "like_count_checked_at": "2026-08-17T11:10:39.899724+00:00",
+    "qa_retry_count": 0
+  },
+  {
+    "date": "2026-08-09",
+    "status": "published",
+    "genre": "money",
+    "angle": "初回投稿(既存記事)",
+    "note_url": "https://note.com/soudan_labo/n/n787ebd1723a3",
+    "like_count": 2,
+    "like_count_checked_at": "2026-08-17T11:10:39.899724+00:00",
+    "qa_retry_count": 0
+  },
+  {
+    "date": "2026-08-09",
+    "status": "published",
+    "genre": "selfesteem",
+    "angle": "初回投稿(既存記事)",
+    "note_url": "https://note.com/soudan_labo/n/n51cd8a6629bc",
+    "like_count": 0,
+    "like_count_checked_at": "2026-08-17T11:10:39.899724+00:00",
+    "qa_retry_count": 0
+  },
+  {
+    "date": "2026-08-17",
+    "status": "published",
+    "genre": "work",
+    "angle": "仕事のミスを何度も思い出して眠れない ― 反芻思考（ルミネーション）",
+    "note_url": "https://note.com/soudan_labo/n/nf46555e91ac7",
+    "like_count": 0,
+    "like_count_checked_at": "2026-08-17T11:10:39.899724+00:00",
+    "qa_retry_count": 0,
+    "image_upload_failed": true
+  }
 ]
