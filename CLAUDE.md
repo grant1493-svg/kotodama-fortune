@@ -17,7 +17,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # テスト（全体）
-python -m pytest tests/ kotodama/tests/ -q
+python -m pytest tests/ -q
+python -m pytest kotodama/tests/ -q
+python -m pytest uketome-soudanshitsu/tests/ -q
 
 # テスト（単一ファイル）
 python -m pytest tests/test_server.py -q
