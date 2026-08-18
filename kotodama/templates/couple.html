@@ -34,9 +34,6 @@
         <!-- 背景弧 -->
         <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#f8e1ee" stroke-width="18" stroke-linecap="round"/>
         <!-- スコア弧 -->
-        {% set angle = (result.score / 100) %}
-        {% set cx = 100 %}{% set cy = 100 %}{% set r = 80 %}
-        {% set end_x = (cx + r * (angle * 3.14159 | cos)) | round(2) %}
         <path d="M 20 100 A 80 80 0 {{ '1' if result.score > 50 else '0' }} 1 {{ (100 + 80 * (1 - result.score/100 * 2) | abs * (1 if result.score > 50 else -1)) | round }} 100"
               fill="none" stroke="url(#grad)" stroke-width="18" stroke-linecap="round"/>
         <defs>
@@ -56,6 +53,15 @@
       💑 今日のラッキーアクション：{{ result.lucky_action }}
     </div>
   </div>
+
+  <!-- AdSense -->
+  <ins class="adsbygoogle"
+       style="display:block; margin:14px 0;"
+       data-ad-client="ca-pub-1165244338225367"
+       data-ad-slot="0000000004"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
 
   <!-- シェアボタン -->
   <div class="share-row" style="margin-top:14px">

@@ -1,12 +1,24 @@
-import json
-from pathlib import Path
+import time
+
 import pytest
-from cache import make_cache_key, get_cached, set_cached
+
+import cache
+from cache import (
+    get_cached,
+    get_cached_image,
+    make_cache_key,
+    set_cached,
+    set_cached_image,
+)
 
 
 @pytest.fixture(autouse=True)
-def clean_cache(tmp_path, monkeypatch):
-    monkeypatch.setattr("cache.CACHE_DIR", tmp_path)
+def clean_cache():
+    """cache.py is an in-memory TTL cache (see module docstring: Render's free
+    tier has an ephemeral filesystem, so the old file-based cache was replaced).
+    Clear the module-level dicts between tests so keys don't leak across tests."""
+    cache._FORTUNE_CACHE.clear()
+    cache._IMAGE_CACHE.clear()
     yield
 
 
@@ -33,33 +45,24 @@ def test_set_and_get_cached():
     assert result == data
 
 
-def test_cache_persists_as_json(tmp_path, monkeypatch):
-    monkeypatch.setattr("cache.CACHE_DIR", tmp_path)
-    set_cached("my-key", {"score": 5})
-    files = list(tmp_path.glob("*.json"))
-    assert len(files) == 1
-    saved = json.loads(files[0].read_text(encoding="utf-8"))
-    assert saved["score"] == 5
+def test_cached_entry_expires_after_ttl():
+    set_cached("expiring-key", {"score": 5}, ttl=0)
+    time.sleep(0.01)
+    assert get_cached("expiring-key") is None
 
 
 def test_get_cached_image_miss_returns_none():
-    from cache import get_cached_image
     assert get_cached_image("no-such-key") is None
 
 
-def test_set_and_get_cached_image(tmp_path, monkeypatch):
-    monkeypatch.setattr("cache.CACHE_DIR", tmp_path)
-    from cache import get_cached_image, set_cached_image
+def test_set_and_get_cached_image():
     png_bytes = b"\x89PNG\r\n\x1a\nfake"
     set_cached_image("img-key", png_bytes)
     result = get_cached_image("img-key")
     assert result == png_bytes
 
 
-def test_cached_image_stored_as_png_file(tmp_path, monkeypatch):
-    monkeypatch.setattr("cache.CACHE_DIR", tmp_path)
-    from cache import set_cached_image
-    set_cached_image("my-img", b"PNGDATA")
-    files = list(tmp_path.glob("*.png"))
-    assert len(files) == 1
-    assert files[0].name == "my-img.png"
+def test_cached_image_expires_after_ttl():
+    set_cached_image("expiring-img", b"PNGDATA", ttl=0)
+    time.sleep(0.01)
+    assert get_cached_image("expiring-img") is None
