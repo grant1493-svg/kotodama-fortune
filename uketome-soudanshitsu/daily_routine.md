@@ -122,4 +122,4 @@ compose_thumbnail(
 - 選んだジャンル・切り口
 - note URL（成功時）／スキップ理由（スキップ時）
 - QA再試行回数
-- 画像アップロードが手動対応必要な場合は、その旨に加えてサムネイル画像の絶対パス（`thumbnails/<date>_<genre>.png`）とnote URLを同じ通知内に含める（手動でのドラッグ&ドロップ添付を1ステップで済ませられるようにするため）
+- 画像アップロードが手動対応必要な場合は、その旨に加えてサムネイル画像のファイルシステム上の絶対パス（`uketome-soudanshitsu/`からの相対パス`thumbnails/<date>_<genre>.png`ではなく、実行時のカレントディレクトリを起点に組み立てた完全なパス。例: `C:\Users\admin\.local\bin\uketome-soudanshitsu\thumbnails\<date>_<genre>.png`）とnote URLを同じ通知内に含める。Push通知は端末上で単独で読まれるため、相対パスでは手元のターミナルの文脈が失われて役に立たない（手動でのドラッグ&ドロップ添付を1ステップで済ませられるようにするため）

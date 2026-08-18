@@ -2,7 +2,7 @@ from pathlib import Path
 
 AGENTS_DIR = Path.home() / ".claude" / "agents"
 EXPECTED_AGENTS = {
-    "performance-analyst-soudan": {"Read", "Write", "Glob"},
+    "performance-analyst-soudan": {"Read", "Write", "Glob", "Bash"},
     "concept-planner-soudan": {"Read", "Write", "WebSearch"},
     "writer-soudan": {"Read", "Write"},
     "qa-reviewer-soudan": {"Read", "Write"},
