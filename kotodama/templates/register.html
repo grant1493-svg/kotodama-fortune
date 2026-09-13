@@ -44,6 +44,13 @@
     </div>
   </form>
 
+  <section class="card" style="background:#f5f7ed;border:1px solid #c7d6bd;margin:20px 0">
+    <div class="card-title">🌿 今日の言霊ものがたり</div>
+    <p>占いのあとに、32秒のひと息。小さな旅人の物語から、今日できることを一つ見つけてみませんか。</p>
+    <a href="{{ url_for('story_page', story_id=story_id|default('bridge')) }}" style="display:inline-block;background:#315945;color:white;padding:12px 20px;border-radius:24px;text-decoration:none">絵と物語を楽しむ →</a>
+    <p style="font-size:12px;color:#66745d;margin-top:10px">3つの共通物語から選べます。無料・音声なし。</p>
+  </section>
+
   <!-- LINE登録CTA（フォーム直下） -->
   <div style="max-width:480px;margin:0.5rem auto 0;padding:0 1rem;">
     <div style="border:1.5px solid #06C755;border-radius:12px;padding:14px;text-align:center;background:#f0fff4;">
@@ -119,6 +126,8 @@
   </div>
   <p style="margin-top:0.8rem;">© 2024 ことだま占い</p>
 </div>
+
+
 
 <script>
 (function() {

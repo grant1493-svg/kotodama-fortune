@@ -8,6 +8,7 @@ from name_analyzer import analyze_name
 from popular_names import get_name_entry, get_related_names
 from stats_fetcher import get_today_stats
 from image_generator import generate_fortune_image
+from stories import STORIES, recommend_story
 
 load_dotenv()
 
@@ -81,6 +82,7 @@ def fortune():
         mei=mei,
         stats=today_stats,
         fortune=fortune_data,
+        story_id=recommend_story(fortune_data.get("today_message")),
         og_title=f"{sei}{mei}さんの今日の言霊 | ことだま占い",
         og_description=fortune_data["kotodama_analysis"][:80],
         og_image_url=f"{base_url}/fortune/image.png",
@@ -231,6 +233,13 @@ def name_page(mei: str):
         og_description=og_desc,
         og_image_url="",
     )
+
+
+@app.route("/stories/<story_id>")
+def story_page(story_id):
+    if story_id not in STORIES:
+        abort(404)
+    return render_template("story.html", story_id=story_id, story=STORIES[story_id], stories=STORIES)
 
 
 if __name__ == "__main__":
